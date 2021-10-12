@@ -1,4 +1,7 @@
 import 'dart:ui';
+import 'package:btiui/services/auth_service.dart';
+import 'package:provider/provider.dart';
+
 import 'editprofile.dart';
 import 'filters.dart';
 import 'package:flutter/cupertino.dart';
@@ -79,8 +82,12 @@ class _HomeState extends State<Home> {
           CupertinoDialogAction(
             child: const Text('Yes'),
             isDestructiveAction: true,
-            onPressed: () {
-              // Do something destructive.
+            onPressed: () async {
+              Navigator.pop(context);
+              Navigator.pop(context);
+              final authService =
+                  Provider.of<AuthService>(context, listen: false);
+              await authService.signOut();
             },
           )
         ],
@@ -216,21 +223,53 @@ class _HomeState extends State<Home> {
       context: context,
       builder: (context) {
         return Dialog(
+          insetPadding: EdgeInsets.all(35),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
           elevation: 160,
           child: Container(
-            //height: (MediaQuery.of(context).size.height / 1.3),
-            //width: (MediaQuery.of(context).size.width / 1),
             child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(40.0),
-                        topLeft: Radius.circular(40.0)),
-                    child: Image(image: AssetImage('images/prof.jpeg')),
+                  Container(
+                    height: (MediaQuery.of(context).size.width) - 70,
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(40.0),
+                                topLeft: Radius.circular(40.0)),
+                            child: Image(
+                              // make sure all images going in are square
+                              image: AssetImage('images/prof.jpeg'),
+                              height: (MediaQuery.of(context).size.width) - 70,
+                              width: (MediaQuery.of(context).size.width) - 70,
+                              fit: BoxFit.fitWidth,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          top: 3,
+                          right: 3,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              height: 50,
+                              width: 50,
+                              child: Icon(
+                                Icons.close,
+                                size: 30,
+                                color: Color(0xff5a5a5a),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   SizedBox(height: 3),
                   RichText(
@@ -383,128 +422,169 @@ class _HomeState extends State<Home> {
       context: context,
       builder: (context) {
         return Dialog(
+          insetPadding: EdgeInsets.all(35),
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
           elevation: 160,
           child: Container(
             //height: (MediaQuery.of(context).size.height / 1.3),
-            //width: (MediaQuery.of(context).size.width / 1),
+            //width: 300,
             child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(40.0),
-                        topLeft: Radius.circular(40.0)),
-                    child: Image(image: AssetImage('images/prof.jpeg')),
-                  ),
-                  SizedBox(height: 3),
-                  RichText(
-                    text: TextSpan(children: <TextSpan>[
-                      TextSpan(
-                        text: "Eric ",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xff5a5a5a),
-                          fontSize: 32,
+                  Container(
+                    height: (MediaQuery.of(context).size.width) - 70,
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(40.0),
+                                topLeft: Radius.circular(40.0)),
+                            child: Image(
+                              // make sure all images going in are square
+                              image: AssetImage('images/prof.jpeg'),
+                              height: (MediaQuery.of(context).size.width) - 70,
+                              width: (MediaQuery.of(context).size.width) - 70,
+                              fit: BoxFit.fitWidth,
+                            ),
+                          ),
                         ),
-                      ),
-                    ]),
-                  ),
-                  Text(
-                    'Economics and Philosophy Major at the UNH',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w300,
-                      color: Color(0xff5a5a5a),
-                      fontSize: 22,
-                      fontStyle: FontStyle.italic,
+                        Positioned(
+                          top: 3,
+                          right: 3,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              height: 50,
+                              width: 50,
+                              child: Icon(
+                                Icons.close,
+                                size: 30,
+                                color: Color(0xff5a5a5a),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 15),
-                  Text(
-                    'Talk to me about:',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xff5a5a5a),
-                      fontSize: 18,
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 5),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 3),
+                        RichText(
+                          text: TextSpan(children: <TextSpan>[
+                            TextSpan(
+                              text: "Eric ",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xff5a5a5a),
+                                fontSize: 32,
+                              ),
+                            ),
+                          ]),
+                        ),
+                        Text(
+                          'Economics and Philosophy Major at the UNH',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w300,
+                            color: Color(0xff5a5a5a),
+                            fontSize: 22,
+                            fontStyle: FontStyle.italic,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: 15),
+                        Text(
+                          'Talk to me about:',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xff5a5a5a),
+                            fontSize: 18,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        ListView(
+                          shrinkWrap: true,
+                          children: const <Widget>[
+                            ListTile(
+                              leading: Icon(Icons.question_answer_outlined),
+                              title: Text(
+                                'Planes and Aviation',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xff5a5a5a),
+                                  fontSize: 16,
+                                ),
+                              ),
+                              dense: true,
+                            ),
+                            ListTile(
+                              leading: Icon(Icons.question_answer_outlined),
+                              title: Text(
+                                'Data Science and Economics',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xff5a5a5a),
+                                  fontSize: 16,
+                                ),
+                              ),
+                              dense: true,
+                            ),
+                            ListTile(
+                              leading: Icon(Icons.question_answer_outlined),
+                              title: Text(
+                                'Philosophy and Stoicism Philosophy',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xff5a5a5a),
+                                  fontSize: 16,
+                                ),
+                              ),
+                              dense: true,
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => EditProfile()),
+                                );
+                              },
+                              icon: Icon(
+                                Icons.edit,
+                                size: 20.0,
+                              ),
+                              label: Text('Edit Profile'),
+                              style: ButtonStyle(
+                                backgroundColor: MaterialStateProperty.all(
+                                    Color(0xff79DFFF)),
+                                padding: MaterialStateProperty.all(
+                                  EdgeInsets.symmetric(
+                                      vertical: 12.8, horizontal: 40),
+                                ),
+                                textStyle: MaterialStateProperty.all(
+                                    TextStyle(fontSize: 18)),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                      ],
                     ),
-                    textAlign: TextAlign.center,
                   ),
-                  ListView(
-                    shrinkWrap: true,
-                    children: const <Widget>[
-                      ListTile(
-                        leading: Icon(Icons.question_answer_outlined),
-                        title: Text(
-                          'Planes and Aviation',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xff5a5a5a),
-                            fontSize: 16,
-                          ),
-                        ),
-                        dense: true,
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.question_answer_outlined),
-                        title: Text(
-                          'Data Science and Economics',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xff5a5a5a),
-                            fontSize: 16,
-                          ),
-                        ),
-                        dense: true,
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.question_answer_outlined),
-                        title: Text(
-                          'Philosophy and Stoicism Philosophy',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xff5a5a5a),
-                            fontSize: 16,
-                          ),
-                        ),
-                        dense: true,
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => EditProfile()),
-                          );
-                        },
-                        icon: Icon(
-                          Icons.edit,
-                          size: 20.0,
-                        ),
-                        label: Text('Edit Profile'),
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Color(0xff79DFFF)),
-                          padding: MaterialStateProperty.all(
-                            EdgeInsets.symmetric(
-                                vertical: 12.8, horizontal: 40),
-                          ),
-                          textStyle: MaterialStateProperty.all(
-                              TextStyle(fontSize: 18)),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
                 ],
               ),
             ),
@@ -514,8 +594,17 @@ class _HomeState extends State<Home> {
     );
   }
 
+  double screenSizeAva() {
+    if (MediaQuery.of(context).size.height > 800) {
+      return 60;
+    } else {
+      return 50;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
     return MaterialApp(
       title: 'Break The Ice',
       theme: ThemeData(
@@ -634,24 +723,146 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                     ),
+
                     // Populate with nearby users under here
+                    // Top Row 1
                     Positioned(
-                      top: 100,
-                      right: 100,
+                      top: (MediaQuery.of(context).size.height / 9),
+                      right: (MediaQuery.of(context).size.width / 24),
                       child: GestureDetector(
                         onTap: () {
                           tapNearbyUser();
                         },
-                        child: avatarGen(0xffc4c4c4, 60, "Eric", "21ft"),
+                        child: avatarGen(
+                            0xffc4c4c4, screenSizeAva(), "Eric", "21ft"),
                       ),
                     ),
                     Positioned(
-                      top: (MediaQuery.of(context).size.height / 2) - 80,
+                      top: (MediaQuery.of(context).size.height / 21),
+                      left: (MediaQuery.of(context).size.width / 2) -
+                          screenSizeAva(),
+                      child: GestureDetector(
+                        onTap: () {
+                          tapNearbyUser();
+                        },
+                        child: avatarGen(
+                            0xffc4c4c4, screenSizeAva(), "Eric", "21ft"),
+                      ),
+                    ),
+                    Positioned(
+                      top: (MediaQuery.of(context).size.height / 9),
+                      left: (MediaQuery.of(context).size.width / 24),
+                      child: GestureDetector(
+                        onTap: () {
+                          tapNearbyUser();
+                        },
+                        child: avatarGen(
+                            0xffc4c4c4, screenSizeAva(), "Eric", "21ft"),
+                      ),
+                    ),
+                    // Top Row 2
+                    Positioned(
+                      top: (MediaQuery.of(context).size.height / 3.5),
+                      right: (MediaQuery.of(context).size.width / 24),
+                      child: GestureDetector(
+                        onTap: () {
+                          tapNearbyUser();
+                        },
+                        child: avatarGen(
+                            0xffc4c4c4, screenSizeAva(), "Eric", "21ft"),
+                      ),
+                    ),
+                    Positioned(
+                      top: (MediaQuery.of(context).size.height / 4.5),
+                      left: (MediaQuery.of(context).size.width / 2) -
+                          screenSizeAva(),
+                      child: GestureDetector(
+                        onTap: () {
+                          tapNearbyUser();
+                        },
+                        child: avatarGen(
+                            0xffc4c4c4, screenSizeAva(), "Eric", "21ft"),
+                      ),
+                    ),
+                    Positioned(
+                      top: (MediaQuery.of(context).size.height / 3.5),
+                      left: (MediaQuery.of(context).size.width / 24),
+                      child: GestureDetector(
+                        onTap: () {
+                          tapNearbyUser();
+                        },
+                        child: avatarGen(
+                            0xffc4c4c4, screenSizeAva(), "Eric", "21ft"),
+                      ),
+                    ),
+                    // Bottom Row 1
+                    Positioned(
+                      bottom: (MediaQuery.of(context).size.height / 3.5),
+                      right: (MediaQuery.of(context).size.width / 24),
+                      child: GestureDetector(
+                        onTap: () {
+                          tapNearbyUser();
+                        },
+                        child: avatarGen(
+                            0xffc4c4c4, screenSizeAva(), "Eric", "21ft"),
+                      ),
+                    ),
+
+                    Positioned(
+                      bottom: (MediaQuery.of(context).size.height / 3.5),
+                      left: (MediaQuery.of(context).size.width / 24),
+                      child: GestureDetector(
+                        onTap: () {
+                          tapNearbyUser();
+                        },
+                        child: avatarGen(
+                            0xffc4c4c4, screenSizeAva(), "Eric", "21ft"),
+                      ),
+                    ),
+                    // Bottom Row 2
+                    Positioned(
+                      bottom: (MediaQuery.of(context).size.height / 9),
+                      right: (MediaQuery.of(context).size.width / 24),
+                      child: GestureDetector(
+                        onTap: () {
+                          tapNearbyUser();
+                        },
+                        child: avatarGen(
+                            0xffc4c4c4, screenSizeAva(), "Eric", "21ft"),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: (MediaQuery.of(context).size.height / 5.5),
+                      left: (MediaQuery.of(context).size.width / 2) -
+                          screenSizeAva(),
+                      child: GestureDetector(
+                        onTap: () {
+                          tapNearbyUser();
+                        },
+                        child: avatarGen(
+                            0xffc4c4c4, screenSizeAva(), "Eric", "21ft"),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: (MediaQuery.of(context).size.height / 9),
+                      left: (MediaQuery.of(context).size.width / 24),
+                      child: GestureDetector(
+                        onTap: () {
+                          tapNearbyUser();
+                        },
+                        child: avatarGen(
+                            0xffc4c4c4, screenSizeAva(), "Eric", "21ft"),
+                      ),
+                    ),
+
+                    // Own profile
+                    Positioned(
+                      top: (MediaQuery.of(context).size.height / 2) - 70,
                       child: GestureDetector(
                         onTap: () {
                           tapOwnProfile();
                         },
-                        child: avatarGen(0xff79DFFF, 80, "You", ""),
+                        child: avatarGen(0xff79DFFF, 70, "You", ""),
                       ),
                     ),
                   ],

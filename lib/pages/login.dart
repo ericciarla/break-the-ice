@@ -1,8 +1,14 @@
 import 'package:btiui/pages/home.dart';
 import 'package:btiui/pages/signup.dart';
+import 'package:btiui/services/auth_service.dart';
+import 'package:btiui/services/wrapper.dart';
 import "package:flutter/material.dart";
 import 'dart:ui';
 import "package:flutter/material.dart";
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:btiui/main.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 
 // Sign Up
 class Login extends StatelessWidget {
@@ -17,7 +23,7 @@ class Login extends StatelessWidget {
         //scaffoldBackgroundColor: const Color(0xffA4E9FF),
       ),
       home: Scaffold(
-        body: const LoginForm(),
+        body: LoginForm(),
       ),
     );
   }
@@ -25,7 +31,7 @@ class Login extends StatelessWidget {
 
 // Create a Form widget.
 class LoginForm extends StatefulWidget {
-  const LoginForm({Key? key}) : super(key: key);
+  LoginForm({Key? key}) : super(key: key);
 
   @override
   LoginFormState createState() {
@@ -44,6 +50,12 @@ class LoginFormState extends State<LoginForm> {
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _formKey created above.
+
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+
+    final authService = Provider.of<AuthService>(context);
+
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
@@ -51,21 +63,7 @@ class LoginFormState extends State<LoginForm> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: 170),
-            //Container(
-            //  child: CircleAvatar(
-            //    backgroundColor: Color(0xff79DFFF),
-            //    radius: 65,
-            //    child: Container(
-            //      width: 110,
-            //      child: Image(
-            //        image: AssetImage('images/logo_shadow4.png'),
-            //        //color: Color(0xffA4E9FF),
-            //      ),
-            //    ),
-            //  ),
-            //),
-
+            SizedBox(height: (MediaQuery.of(context).size.height / 3)),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 30.0),
               child: Column(children: [
@@ -101,6 +99,7 @@ class LoginFormState extends State<LoginForm> {
                 ),
                 TextFormField(
                   //initialValue: "Eric",
+                  controller: emailController,
                   decoration: const InputDecoration(
                     //icon: Icon(Icons.person),
                     labelText: 'Email *',
@@ -115,6 +114,7 @@ class LoginFormState extends State<LoginForm> {
                 SizedBox(height: 10),
                 TextFormField(
                   //initialValue: "Eric",
+                  controller: passwordController,
                   decoration: const InputDecoration(
                     //icon: Icon(Icons.person),
                     labelText: 'Password *',
@@ -137,18 +137,15 @@ class LoginFormState extends State<LoginForm> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Home()),
-                      );
-                      //if (_formKey.currentState!.validate()) {
-                      //  // If the form is valid, display a snackbar. In the real world,
-                      //  // you'd often call a server or save the information in a database.
-                      //  ScaffoldMessenger.of(context).showSnackBar(
-                      //    const SnackBar(content: Text('Processing Data')),
-                      //  );
-                      //}
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        await authService.signInWithEmailAndPassword(
+                            emailController.text, passwordController.text);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Wrapper()),
+                        );
+                      }
                     },
                     child: const Text('Log In'),
                     style: ButtonStyle(

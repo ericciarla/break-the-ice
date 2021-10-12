@@ -2,10 +2,16 @@ import 'dart:io';
 
 import 'package:btiui/pages/home.dart';
 import 'package:btiui/pages/login.dart';
+import 'package:btiui/pages/welcome.dart';
+import 'package:btiui/services/wrapper.dart';
 import "package:flutter/material.dart";
 import 'dart:ui';
 import "package:flutter/material.dart";
 import 'package:image_picker_widget/image_picker_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:btiui/services/auth_service.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 
 //import 'package:flow_builder/flow_builder.dart';
 import '../models/signup_model.dart';
@@ -51,6 +57,12 @@ class SignUpFormState extends State<SignUpForm> {
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _formKey created above.
+
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+
+    final authService = Provider.of<AuthService>(context);
+
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
@@ -58,20 +70,7 @@ class SignUpFormState extends State<SignUpForm> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: 60),
-            //Container(
-            //  child: CircleAvatar(
-            //    backgroundColor: Color(0xff79DFFF),
-            //    radius: 65,
-            //    child: Container(
-            //      width: 110,
-            //      child: Image(
-            //        image: AssetImage('images/logo_shadow4.png'),
-            //        //color: Color(0xffA4E9FF),
-            //      ),
-            //    ),
-            //  ),
-            //),
+            SizedBox(height: (MediaQuery.of(context).size.height / 10)),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 30.0),
               child: Column(children: [
@@ -215,6 +214,7 @@ class SignUpFormState extends State<SignUpForm> {
                 //SizedBox(height: 10),
                 TextFormField(
                   //initialValue: "Eric",
+                  controller: emailController,
                   decoration: const InputDecoration(
                     //icon: Icon(Icons.person),
                     labelText: 'Email *',
@@ -229,6 +229,7 @@ class SignUpFormState extends State<SignUpForm> {
                 //SizedBox(height: 10),
                 TextFormField(
                   //initialValue: "Eric",
+                  controller: passwordController,
                   decoration: const InputDecoration(
                     //icon: Icon(Icons.person),
                     labelText: 'Password *',
@@ -250,11 +251,11 @@ class SignUpFormState extends State<SignUpForm> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Home()),
-                      );
+                    onPressed: () async {
+                      //Navigator.push(
+                      //  context,
+                      //  MaterialPageRoute(builder: (context) => Home()),
+                      //);
                       //if (_formKey.currentState!.validate()) {
                       //  // If the form is valid, display a snackbar. In the real world,
                       //  // you'd often call a server or save the information in a database.
@@ -262,6 +263,12 @@ class SignUpFormState extends State<SignUpForm> {
                       //    const SnackBar(content: Text('Processing Data')),
                       //  );
                       //}
+                      await authService.createUserWithEmailAndPassword(
+                          emailController.text, passwordController.text);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Wrapper()),
+                      );
                     },
                     child: const Text('Sign Up'),
                     style: ButtonStyle(
