@@ -13,9 +13,6 @@ import 'package:btiui/services/auth_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 
-//import 'package:flow_builder/flow_builder.dart';
-import '../models/signup_model.dart';
-
 // Sign Up
 class SignUp extends StatelessWidget {
   const SignUp({Key? key}) : super(key: key);

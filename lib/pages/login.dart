@@ -141,6 +141,7 @@ class LoginFormState extends State<LoginForm> {
                       if (_formKey.currentState!.validate()) {
                         await authService.signInWithEmailAndPassword(
                             emailController.text, passwordController.text);
+
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => Wrapper()),

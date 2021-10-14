@@ -1,14 +1,19 @@
 import 'dart:ui';
 import 'package:btiui/services/auth_service.dart';
 import 'package:provider/provider.dart';
-
+import 'package:btiui/models/user_model.dart';
 import 'editprofile.dart';
 import 'filters.dart';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
 import 'dart:math';
+import '../services/database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:btiui/models/user_model_db.dart';
 
 class Home extends StatefulWidget {
+  const Home({Key? key}) : super(key: key);
+
   @override
   _HomeState createState() => _HomeState();
 }
@@ -418,6 +423,12 @@ class _HomeState extends State<Home> {
   }
 
   void tapOwnProfile() {
+    final userAttrDB = Provider.of<List<UserAttDB>>(context, listen: false);
+    var fname = userAttrDB[0].fname;
+    var headline = userAttrDB[0].headline;
+    var f1 = userAttrDB[0].f1;
+    var f2 = userAttrDB[0].f2;
+    var f3 = userAttrDB[0].f3;
     showDialog(
       context: context,
       builder: (context) {
@@ -480,7 +491,7 @@ class _HomeState extends State<Home> {
                         RichText(
                           text: TextSpan(children: <TextSpan>[
                             TextSpan(
-                              text: "Eric ",
+                              text: "${fname}",
                               style: const TextStyle(
                                 fontWeight: FontWeight.w700,
                                 color: Color(0xff5a5a5a),
@@ -490,7 +501,7 @@ class _HomeState extends State<Home> {
                           ]),
                         ),
                         Text(
-                          'Economics and Philosophy Major at the UNH',
+                          '${headline}',
                           style: TextStyle(
                             fontWeight: FontWeight.w300,
                             color: Color(0xff5a5a5a),
@@ -511,11 +522,11 @@ class _HomeState extends State<Home> {
                         ),
                         ListView(
                           shrinkWrap: true,
-                          children: const <Widget>[
+                          children: <Widget>[
                             ListTile(
                               leading: Icon(Icons.question_answer_outlined),
                               title: Text(
-                                'Planes and Aviation',
+                                '${f1}',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   color: Color(0xff5a5a5a),
@@ -527,7 +538,7 @@ class _HomeState extends State<Home> {
                             ListTile(
                               leading: Icon(Icons.question_answer_outlined),
                               title: Text(
-                                'Data Science and Economics',
+                                '${f2}',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   color: Color(0xff5a5a5a),
@@ -539,7 +550,7 @@ class _HomeState extends State<Home> {
                             ListTile(
                               leading: Icon(Icons.question_answer_outlined),
                               title: Text(
-                                'Philosophy and Stoicism Philosophy',
+                                '${f3}',
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   color: Color(0xff5a5a5a),
@@ -604,7 +615,15 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final authService = Provider.of<AuthService>(context);
+    //final authService = Provider.of<AuthService>(context, listen: false);
+
+    //final User user = authService.user as User;
+    final user = Provider.of<UserAtt?>(context);
+    final userAttrDB = Provider.of<List<UserAttDB>>(context);
+
+    //print(tet.toString());
+
+    //print(user?.uid);
     return MaterialApp(
       title: 'Break The Ice',
       theme: ThemeData(

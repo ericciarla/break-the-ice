@@ -4,6 +4,11 @@ import "package:flutter/material.dart";
 import 'dart:math';
 import 'package:image_picker_widget/image_picker_widget.dart';
 import 'dart:io';
+import 'package:btiui/models/user_model_db.dart';
+import 'package:btiui/models/user_model.dart';
+import '../services/database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 
 // Edit Profile
 class EditProfile extends StatelessWidget {
@@ -42,6 +47,20 @@ class EditProfileFormState extends State<EditProfileForm> {
 
   @override
   Widget build(BuildContext context) {
+    final userAttrDB = Provider.of<List<UserAttDB>>(context, listen: false);
+    final user = Provider.of<UserAtt?>(context);
+    var fname = userAttrDB[0].fname;
+    var headline = userAttrDB[0].headline;
+    var f1 = userAttrDB[0].f1;
+    var f2 = userAttrDB[0].f2;
+    var f3 = userAttrDB[0].f3;
+    final TextEditingController fnameController =
+        TextEditingController(text: fname);
+    final TextEditingController headlineController =
+        TextEditingController(text: headline);
+    final TextEditingController f1Controller = TextEditingController(text: f1);
+    final TextEditingController f2Controller = TextEditingController(text: f2);
+    final TextEditingController f3Controller = TextEditingController(text: f3);
     // Build a Form widget using the _formKey created above.
     return Form(
       key: _formKey,
@@ -68,7 +87,7 @@ class EditProfileFormState extends State<EditProfileForm> {
                       },
                     ),
                     TextFormField(
-                      initialValue: "Eric",
+                      controller: fnameController,
                       //maxLength: 65,
                       decoration: const InputDecoration(
                         //icon: Icon(Icons.person),
@@ -86,7 +105,8 @@ class EditProfileFormState extends State<EditProfileForm> {
                     ),
                     SizedBox(height: 10),
                     TextFormField(
-                      initialValue: "Economics Major at UNH",
+                      controller: headlineController,
+
                       //maxLength: 65,
                       decoration: const InputDecoration(
                         //icon: Icon(Icons.person),
@@ -105,7 +125,8 @@ class EditProfileFormState extends State<EditProfileForm> {
                     ),
                     SizedBox(height: 10),
                     TextFormField(
-                      initialValue: "",
+                      controller: f1Controller,
+
                       //maxLength: 65,
                       decoration: const InputDecoration(
                         //icon: Icon(Icons.person),
@@ -126,7 +147,8 @@ class EditProfileFormState extends State<EditProfileForm> {
                     SizedBox(height: 10),
                     TextFormField(
                       //maxLength: 65,
-                      initialValue: "",
+                      controller: f2Controller,
+
                       decoration: const InputDecoration(
                         //icon: Icon(Icons.person),
                         hintText: 'Ex. Economics and Data Science',
@@ -145,8 +167,9 @@ class EditProfileFormState extends State<EditProfileForm> {
                     ),
                     SizedBox(height: 10),
                     TextFormField(
+                      controller: f3Controller,
                       //maxLength: 65,
-                      initialValue: "",
+
                       decoration: const InputDecoration(
                         //icon: Icon(Icons.person),
                         hintText: 'Ex. I have a beach house in Maine',
@@ -176,9 +199,25 @@ class EditProfileFormState extends State<EditProfileForm> {
                       if (_formKey.currentState!.validate()) {
                         // If the form is valid, display a snackbar. In the real world,
                         // you'd often call a server or save the information in a database.
+
+                        DatabaseService(uid: user!.uid).updateUserData(
+                            fnameController.text,
+                            headlineController.text,
+                            f1Controller.text,
+                            f2Controller.text,
+                            f3Controller.text,
+                            false);
+
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Processing Data')),
+                          const SnackBar(content: Text('Change successful!')),
                         );
+
+                        Future.delayed(const Duration(milliseconds: 750), () {
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        });
+                      } else {
+                        print("Not valid");
                       }
                     },
                     icon: Icon(

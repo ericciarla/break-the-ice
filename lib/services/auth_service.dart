@@ -1,36 +1,53 @@
+import 'package:btiui/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:btiui/models/user_model.dart';
+import 'package:flutter/material.dart';
 
 class AuthService {
   final auth.FirebaseAuth _firebaseAuth = auth.FirebaseAuth.instance;
 
-  User? _userFromFirebase(auth.User? user) {
+  UserAtt? _userFromFirebase(auth.User? user) {
     if (user == null) {
       return null;
     }
-    return User(user.uid, user.email);
+    return UserAtt(user.uid, user.email);
   }
 
-  Stream<User?>? get user {
+  Stream<UserAtt?>? get user {
     return _firebaseAuth.authStateChanges().map(_userFromFirebase);
   }
 
-  Future<User?> signInWithEmailAndPassword(
+  Future<UserAtt?> signInWithEmailAndPassword(
     String email,
     String password,
   ) async {
-    final credential = await _firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password);
-    return _userFromFirebase(credential.user);
+    try {
+      final credential = await _firebaseAuth.signInWithEmailAndPassword(
+          email: email, password: password);
+      return _userFromFirebase(credential.user);
+    } on auth.FirebaseAuthException catch (e) {
+      print(e.message);
+    }
   }
 
-  Future<User?> createUserWithEmailAndPassword(
+  Future<UserAtt?> createUserWithEmailAndPassword(
     String email,
     String password,
   ) async {
-    final credential = await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email, password: password);
-    return _userFromFirebase(credential.user);
+    try {
+      final credential = await _firebaseAuth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      await DatabaseService(uid: credential.user!.uid).updateUserData(
+          'Eric',
+          'Data Scientist',
+          'I like planes',
+          'I like coding',
+          'I like people',
+          false);
+      return _userFromFirebase(credential.user);
+    } on auth.FirebaseAuthException catch (e) {
+      print(e.message);
+    }
   }
 
   Future<void> signOut() async {

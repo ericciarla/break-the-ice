@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
 import 'dart:math';
-import 'package:btiui/models/filters_model.dart';
 
 // Edit Profile
 class Filters extends StatelessWidget {

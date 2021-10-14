@@ -1,6 +1,6 @@
-class User {
+class UserAtt {
   final String uid;
   final String? email;
 
-  User(this.uid, this.email);
+  UserAtt(this.uid, this.email);
 }
