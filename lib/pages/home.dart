@@ -133,19 +133,19 @@ class _HomeState extends State<Home> {
                     trailing: Icon(Icons.navigate_next),
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Filters()),
-                    );
-                  },
-                  child: ListTile(
-                    leading: Icon(Icons.filter_alt),
-                    title: Text('Filters'),
-                    trailing: Icon(Icons.navigate_next),
-                  ),
-                ),
+                //GestureDetector(
+                //  onTap: () {
+                //    Navigator.push(
+                //      context,
+                //      MaterialPageRoute(builder: (context) => Filters()),
+                //    );
+                //  },
+                //  child: ListTile(
+                //    leading: Icon(Icons.filter_alt),
+                //    title: Text('Filters'),
+                //    trailing: Icon(Icons.navigate_next),
+                //  ),
+                //),
                 GestureDetector(
                   onTap: () {
                     tapSignOut();
