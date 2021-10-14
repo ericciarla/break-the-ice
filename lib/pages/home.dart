@@ -615,15 +615,15 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    //final authService = Provider.of<AuthService>(context, listen: false);
-
-    //final User user = authService.user as User;
+    // Streams
     final user = Provider.of<UserAtt?>(context);
     final userAttrDB = Provider.of<List<UserAttDB>>(context);
+    final test = Provider.of<QuerySnapshot?>(context);
 
-    //print(tet.toString());
+    if (userAttrDB.length > 0) {
+      print(userAttrDB[0].fname);
+    }
 
-    //print(user?.uid);
     return MaterialApp(
       title: 'Break The Ice',
       theme: ThemeData(

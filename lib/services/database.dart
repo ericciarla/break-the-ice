@@ -1,5 +1,7 @@
 import 'package:btiui/models/user_model.dart';
+import 'package:btiui/services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user_model_db.dart';
 
 class DatabaseService {
@@ -20,11 +22,6 @@ class DatabaseService {
       'f3': f3,
       'hidden': hidden,
     });
-  }
-
-
-  Future<DocumentSnapshot> getUserData() async {
-    return await userAttrCollection.doc(uid).get();
   }
 
   // Get own user info
@@ -49,5 +46,22 @@ class DatabaseService {
         .where('__name__', isEqualTo: uid)
         .snapshots()
         .map(_userAttDBFromSnapshot);
+  }
+
+  Stream<List<UserAttDB>> get UserAttDBs2 async* {
+    final User? user = await AuthService().getCurrentUser();
+    String userId = user?.uid ?? " ";
+    yield* userAttrCollection
+        .where('__name__', isEqualTo: userId)
+        .snapshots()
+        .map(_userAttDBFromSnapshot);
+  }
+
+  Stream<QuerySnapshot?> getDataStreamSnapshots() async* {
+    // Get current user.
+    final User? user = await AuthService().getCurrentUser();
+    String userId = user?.uid ?? " ";
+    print(userId);
+    yield* userAttrCollection.where("uid", isEqualTo: userId).snapshots();
   }
 }

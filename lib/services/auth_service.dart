@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class AuthService {
   final auth.FirebaseAuth _firebaseAuth = auth.FirebaseAuth.instance;
 
-  UserAtt? _userFromFirebase(auth.User? user) {
+  UserAtt? userFromFirebase(auth.User? user) {
     if (user == null) {
       return null;
     }
@@ -14,7 +14,7 @@ class AuthService {
   }
 
   Stream<UserAtt?>? get user {
-    return _firebaseAuth.authStateChanges().map(_userFromFirebase);
+    return _firebaseAuth.authStateChanges().map(userFromFirebase);
   }
 
   Future<UserAtt?> signInWithEmailAndPassword(
@@ -24,7 +24,7 @@ class AuthService {
     try {
       final credential = await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
-      return _userFromFirebase(credential.user);
+      return userFromFirebase(credential.user);
     } on auth.FirebaseAuthException catch (e) {
       print(e.message);
     }
@@ -44,10 +44,15 @@ class AuthService {
           'I like coding',
           'I like people',
           false);
-      return _userFromFirebase(credential.user);
+      return userFromFirebase(credential.user);
     } on auth.FirebaseAuthException catch (e) {
       print(e.message);
     }
+  }
+
+  Future<auth.User?> getCurrentUser() async {
+    final auth.User? user = await auth.FirebaseAuth.instance.currentUser;
+    return user;
   }
 
   Future<void> signOut() async {
