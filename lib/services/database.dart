@@ -5,16 +5,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user_model_db.dart';
 
 class DatabaseService {
-  final String uid;
-
-  DatabaseService({required this.uid});
-
   final CollectionReference userAttrCollection =
       FirebaseFirestore.instance.collection('userAttr');
 
   Future updateUserData(String fname, String headline, String f1, String f2,
       String f3, bool hidden) async {
-    return await userAttrCollection.doc(uid).set({
+    final User? user = await AuthService().getCurrentUser();
+    String userId = user?.uid ?? " ";
+    return await userAttrCollection.doc(userId).set({
       'fname': fname,
       'headline': headline,
       'f1': f1,
@@ -37,16 +35,16 @@ class DatabaseService {
     }).toList();
   }
 
-  Stream<List<UserAttDB>> get UserAttDBs {
-    //return userAttrCollection
-    //    .where('fname', isEqualTo: "Eric")
-    //    .snapshots()
-    //    .map(_userAttDBFromSnapshot);
-    return userAttrCollection
-        .where('__name__', isEqualTo: uid)
-        .snapshots()
-        .map(_userAttDBFromSnapshot);
-  }
+  //Stream<List<UserAttDB>> get UserAttDBs {
+  //  //return userAttrCollection
+  //  //    .where('fname', isEqualTo: "Eric")
+  //  //    .snapshots()
+  //  //    .map(_userAttDBFromSnapshot);
+  //  return userAttrCollection
+  //      .where('__name__', isEqualTo: uid)
+  //      .snapshots()
+  //      .map(_userAttDBFromSnapshot);
+  //}
 
   Stream<List<UserAttDB>> get UserAttDBs2 async* {
     final User? user = await AuthService().getCurrentUser();
@@ -57,11 +55,11 @@ class DatabaseService {
         .map(_userAttDBFromSnapshot);
   }
 
-  Stream<QuerySnapshot?> getDataStreamSnapshots() async* {
-    // Get current user.
-    final User? user = await AuthService().getCurrentUser();
-    String userId = user?.uid ?? " ";
-    print(userId);
-    yield* userAttrCollection.where("uid", isEqualTo: userId).snapshots();
-  }
+  //Stream<QuerySnapshot?> getDataStreamSnapshots() async* {
+  //  // Get current user.
+  //  final User? user = await AuthService().getCurrentUser();
+  //  String userId = user?.uid ?? " ";
+  //  print(userId);
+  //  yield* userAttrCollection.where("uid", isEqualTo: userId).snapshots();
+  //}
 }

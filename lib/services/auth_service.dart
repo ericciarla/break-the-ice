@@ -37,13 +37,7 @@ class AuthService {
     try {
       final credential = await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
-      await DatabaseService(uid: credential.user!.uid).updateUserData(
-          'Eric',
-          'Data Scientist',
-          'I like planes',
-          'I like coding',
-          'I like people',
-          false);
+
       return userFromFirebase(credential.user);
     } on auth.FirebaseAuthException catch (e) {
       print(e.message);

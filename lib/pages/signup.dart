@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:btiui/pages/home.dart';
 import 'package:btiui/pages/login.dart';
 import 'package:btiui/pages/welcome.dart';
@@ -12,6 +11,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:btiui/services/auth_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import '../services/database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 // Sign Up
 class SignUp extends StatelessWidget {
@@ -57,6 +58,11 @@ class SignUpFormState extends State<SignUpForm> {
 
     final TextEditingController emailController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
+    final TextEditingController fnameController = TextEditingController();
+    final TextEditingController headlineController = TextEditingController();
+    final TextEditingController f1Controller = TextEditingController();
+    final TextEditingController f2Controller = TextEditingController();
+    final TextEditingController f3Controller = TextEditingController();
 
     final authService = Provider.of<AuthService>(context);
 
@@ -117,6 +123,7 @@ class SignUpFormState extends State<SignUpForm> {
                 TextFormField(
                   //initialValue: "Eric",
                   //maxLength: 65,
+                  controller: fnameController,
                   decoration: const InputDecoration(
                     //icon: Icon(Icons.person),
                     labelText: 'First Name *',
@@ -136,6 +143,7 @@ class SignUpFormState extends State<SignUpForm> {
                 TextFormField(
                   //maxLength: 65,
                   //initialValue: "Economics Major at UNH",
+                  controller: headlineController,
                   decoration: const InputDecoration(
                     //icon: Icon(Icons.person),
                     hintText: 'Ex. Economics Major @ UNH ',
@@ -155,6 +163,7 @@ class SignUpFormState extends State<SignUpForm> {
                 TextFormField(
                   //maxLength: 65,
                   //initialValue: "",
+                  controller: f1Controller,
                   decoration: const InputDecoration(
                     //icon: Icon(Icons.person),
                     hintText: 'Ex. My favorite place in the world is Rome',
@@ -174,6 +183,7 @@ class SignUpFormState extends State<SignUpForm> {
                 TextFormField(
                   //maxLength: 65,
                   //initialValue: "",
+                  controller: f2Controller,
                   decoration: const InputDecoration(
                     //icon: Icon(Icons.person),
                     hintText: 'Ex. Economics and Data Science',
@@ -193,6 +203,7 @@ class SignUpFormState extends State<SignUpForm> {
                 TextFormField(
                   //maxLength: 65,
                   //initialValue: "",
+                  controller: f3Controller,
                   decoration: const InputDecoration(
                     //icon: Icon(Icons.person),
                     hintText: 'Ex. I have a beach house in Maine',
@@ -249,23 +260,24 @@ class SignUpFormState extends State<SignUpForm> {
                 children: [
                   ElevatedButton(
                     onPressed: () async {
-                      //Navigator.push(
-                      //  context,
-                      //  MaterialPageRoute(builder: (context) => Home()),
-                      //);
-                      //if (_formKey.currentState!.validate()) {
-                      //  // If the form is valid, display a snackbar. In the real world,
-                      //  // you'd often call a server or save the information in a database.
-                      //  ScaffoldMessenger.of(context).showSnackBar(
-                      //    const SnackBar(content: Text('Processing Data')),
-                      //  );
-                      //}
-                      await authService.createUserWithEmailAndPassword(
-                          emailController.text, passwordController.text);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Wrapper()),
-                      );
+                      if (_formKey.currentState!.validate()) {
+                        await authService.createUserWithEmailAndPassword(
+                            emailController.text, passwordController.text);
+                        await DatabaseService().updateUserData(
+                            fnameController.text,
+                            headlineController.text,
+                            f1Controller.text,
+                            f2Controller.text,
+                            f3Controller.text,
+                            false);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Wrapper()),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Processing Data')),
+                        );
+                      }
                     },
                     child: const Text('Sign Up'),
                     style: ButtonStyle(

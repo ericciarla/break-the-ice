@@ -20,7 +20,6 @@ class Wrapper extends StatelessWidget {
             if (user == null) {
               return Welcome();
             } else {
-              //print(user.email);
               return Home();
             }
           } else {

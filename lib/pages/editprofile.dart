@@ -200,7 +200,7 @@ class EditProfileFormState extends State<EditProfileForm> {
                         // If the form is valid, display a snackbar. In the real world,
                         // you'd often call a server or save the information in a database.
 
-                        DatabaseService(uid: user!.uid).updateUserData(
+                        DatabaseService().updateUserData(
                             fnameController.text,
                             headlineController.text,
                             f1Controller.text,

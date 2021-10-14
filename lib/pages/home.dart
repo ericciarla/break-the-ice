@@ -618,7 +618,6 @@ class _HomeState extends State<Home> {
     // Streams
     final user = Provider.of<UserAtt?>(context);
     final userAttrDB = Provider.of<List<UserAttDB>>(context);
-    final test = Provider.of<QuerySnapshot?>(context);
 
     if (userAttrDB.length > 0) {
       print(userAttrDB[0].fname);

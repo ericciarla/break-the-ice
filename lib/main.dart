@@ -43,20 +43,16 @@ class _MyAppState extends State<MyApp> {
           create: (_) => AuthService(),
         ),
         Provider<DatabaseService>(
-          create: (_) => DatabaseService(uid: ' '),
+          create: (_) => DatabaseService(),
         ),
         // Streams
         StreamProvider<UserAtt?>(
           initialData: null,
           create: (_) => AuthService().user,
         ),
-        StreamProvider<QuerySnapshot?>(
-          initialData: null,
-          create: (_) => DatabaseService(uid: ' ').getDataStreamSnapshots(),
-        ),
         StreamProvider<List<UserAttDB>>(
           initialData: const <UserAttDB>[],
-          create: (_) => DatabaseService(uid: '').UserAttDBs2,
+          create: (_) => DatabaseService().UserAttDBs2,
         ),
       ],
       child: MaterialApp(
