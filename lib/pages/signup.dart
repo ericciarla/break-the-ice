@@ -50,7 +50,7 @@ class SignUpFormState extends State<SignUpForm> {
   //
   // Note: This is a GlobalKey<FormState>,
   // not a GlobalKey<SignUpFormState>.
-  final _formKey = GlobalKey<FormState>();
+  static final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:ui';
+import 'package:btiui/models/location_model.dart';
 import 'package:btiui/services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:btiui/models/user_model.dart';
@@ -10,6 +12,9 @@ import 'dart:math';
 import '../services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:btiui/models/user_model_db.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
+import 'package:location/location.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -92,6 +97,7 @@ class _HomeState extends State<Home> {
               Navigator.pop(context);
               final authService =
                   Provider.of<AuthService>(context, listen: false);
+
               await authService.signOut();
             },
           )
@@ -133,19 +139,6 @@ class _HomeState extends State<Home> {
                     trailing: Icon(Icons.navigate_next),
                   ),
                 ),
-                //GestureDetector(
-                //  onTap: () {
-                //    Navigator.push(
-                //      context,
-                //      MaterialPageRoute(builder: (context) => Filters()),
-                //    );
-                //  },
-                //  child: ListTile(
-                //    leading: Icon(Icons.filter_alt),
-                //    title: Text('Filters'),
-                //    trailing: Icon(Icons.navigate_next),
-                //  ),
-                //),
                 GestureDetector(
                   onTap: () {
                     tapSignOut();
@@ -613,15 +606,47 @@ class _HomeState extends State<Home> {
     }
   }
 
+  Widget nearbyUsersDisplay(List<UserAttDB>? nbUsers) {
+    if (nbUsers?.length == 1) {
+      return Positioned(
+        top: (MediaQuery.of(context).size.height / 4.5),
+        left: (MediaQuery.of(context).size.width / 2) - screenSizeAva(),
+        child: GestureDetector(
+          onTap: () {
+            tapNearbyUser();
+          },
+          child: avatarGen(0xffc4c4c4, screenSizeAva(), "Eric", ""),
+        ),
+      );
+    } else {
+      return Positioned(
+        top: (MediaQuery.of(context).size.height / 4.5),
+        left: (MediaQuery.of(context).size.width / 2) - screenSizeAva(),
+        child: Text("No users found!"),
+      );
+    }
+  }
+
+  // init nearby users
+  List<DocumentSnapshot>? nearbyUsers = null;
+
   @override
   Widget build(BuildContext context) {
     // Streams
     final user = Provider.of<UserAtt?>(context);
-    final userAttrDB = Provider.of<List<UserAttDB>>(context);
+    final userAttd = Provider.of<UserAttDB?>(context);
+    final userLocs = Provider.of<List<UserLoc>>(context);
 
-    if (userAttrDB.length > 0) {
-      print(userAttrDB[0].fname);
+    if (userLocs.length > 0) {
+      print("nearby users:");
+      userLocs.forEach((element) {
+        print(element.uid);
+      });
     }
+
+    // Update location
+    const waitTime = Duration(seconds: 30);
+    Timer.periodic(waitTime, (Timer t) => DatabaseService().updateLocation());
 
     return MaterialApp(
       title: 'Break The Ice',
@@ -679,7 +704,6 @@ class _HomeState extends State<Home> {
                         ]),
                       ),
                     ),
-
                     Positioned(
                       bottom: 25,
                       left: 22,
@@ -744,6 +768,7 @@ class _HomeState extends State<Home> {
 
                     // Populate with nearby users under here
                     // Top Row 1
+
                     Positioned(
                       top: (MediaQuery.of(context).size.height / 9),
                       right: (MediaQuery.of(context).size.width / 24),

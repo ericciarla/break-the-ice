@@ -1,3 +1,4 @@
+import 'package:btiui/models/location_model.dart';
 import 'package:btiui/pages/editprofile.dart';
 import 'package:btiui/services/auth_service.dart';
 import 'package:btiui/services/wrapper.dart';
@@ -50,9 +51,13 @@ class _MyAppState extends State<MyApp> {
           initialData: null,
           create: (_) => AuthService().user,
         ),
-        StreamProvider<List<UserAttDB>>(
-          initialData: const <UserAttDB>[],
-          create: (_) => DatabaseService().UserAttDBs2,
+        StreamProvider<UserAttDB?>(
+          initialData: null,
+          create: (_) => DatabaseService().UserAttDBs3,
+        ),
+        StreamProvider<List<UserLoc>>(
+          initialData: const <UserLoc>[],
+          create: (_) => DatabaseService().nearbyUsers,
         ),
       ],
       child: MaterialApp(
