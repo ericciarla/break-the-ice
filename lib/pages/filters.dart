@@ -37,13 +37,13 @@ class FiltersFormState extends State<FiltersForm> {
   //
   // Note: This is a GlobalKey<FormState>,
   // not a GlobalKey<FiltersFormState>.
-  final _formKey = GlobalKey<FormState>();
+  final _filtersformKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    // Build a Form widget using the _formKey created above.
+    // Build a Form widget using the _filtersformKey created above.
     return Form(
-      key: _formKey,
+      key: _filtersformKey,
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -140,7 +140,7 @@ class FiltersFormState extends State<FiltersForm> {
                 children: [
                   ElevatedButton.icon(
                     onPressed: () {
-                      if (_formKey.currentState!.validate()) {
+                      if (_filtersformKey.currentState!.validate()) {
                         // If the form is valid, display a snackbar. In the real world,
                         // you'd often call a server or save the information in a database.
                         ScaffoldMessenger.of(context).showSnackBar(

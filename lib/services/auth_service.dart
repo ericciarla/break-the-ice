@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:btiui/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class AuthService {
   final auth.FirebaseAuth _firebaseAuth = auth.FirebaseAuth.instance;
@@ -27,6 +28,14 @@ class AuthService {
           email: email, password: password);
       return userFromFirebase(credential.user);
     } on auth.FirebaseAuthException catch (e) {
+      Fluttertoast.showToast(
+          msg: e.message ?? "No Error",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+
       print(e.message);
     }
   }
@@ -41,6 +50,14 @@ class AuthService {
 
       return userFromFirebase(credential.user);
     } on auth.FirebaseAuthException catch (e) {
+      Fluttertoast.showToast(
+          msg: e.message ?? "No Error",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+
       print(e.message);
     }
   }

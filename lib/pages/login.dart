@@ -46,11 +46,11 @@ class LoginFormState extends State<LoginForm> {
   //
   // Note: This is a GlobalKey<FormState>,
   // not a GlobalKey<LoginFormState>.
-  static final _formKey = GlobalKey<FormState>();
+  static final _loginformKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    // Build a Form widget using the _formKey created above.
+    // Build a Form widget using the _loginformKey created above.
 
     final TextEditingController emailController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
@@ -58,7 +58,7 @@ class LoginFormState extends State<LoginForm> {
     final authService = Provider.of<AuthService>(context);
 
     return Form(
-      key: _formKey,
+      key: _loginformKey,
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -139,14 +139,17 @@ class LoginFormState extends State<LoginForm> {
                 children: [
                   ElevatedButton(
                     onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
+                      if (_loginformKey.currentState!.validate()) {
                         await authService.signInWithEmailAndPassword(
                             emailController.text, passwordController.text);
-
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Wrapper()),
-                        );
+                        final User? user = await AuthService().getCurrentUser();
+                        String userId = user?.uid ?? " ";
+                        if (userId != " ") {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Wrapper()),
+                          );
+                        }
                       }
                     },
                     child: const Text('Log In'),

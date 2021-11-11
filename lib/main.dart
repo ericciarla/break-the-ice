@@ -1,9 +1,11 @@
 import 'package:btiui/models/location_model.dart';
 import 'package:btiui/pages/editprofile.dart';
 import 'package:btiui/services/auth_service.dart';
+import 'package:btiui/services/user_db_info.dart';
 import 'package:btiui/services/wrapper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'models/nearby_user_model_db.dart';
 import 'models/user_model_db.dart';
 import 'pages/home.dart';
 import 'pages/signup.dart';
@@ -16,6 +18,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'models/user_model.dart';
 import 'services/database.dart';
+import 'package:location/location.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,9 +58,17 @@ class _MyAppState extends State<MyApp> {
           initialData: null,
           create: (_) => DatabaseService().UserAttDBs3,
         ),
+        ChangeNotifierProvider<UserAttDbInfo?>(
+          create: (_) => UserAttDbInfo(),
+        ),
         StreamProvider<List<UserLoc>>(
           initialData: const <UserLoc>[],
           create: (_) => DatabaseService().nearbyUsers,
+        ),
+        StreamProvider<List<NearUserAttDB>>(
+          initialData: const <NearUserAttDB>[],
+          create: (_) => DatabaseService()
+              .allNearbyUsersAttr(DatabaseService().nearbyUsers),
         ),
       ],
       child: MaterialApp(

@@ -1,19 +1,29 @@
 import 'dart:async';
 import 'dart:ui';
-import 'package:btiui/models/location_model.dart';
-import 'package:btiui/services/auth_service.dart';
-import 'package:provider/provider.dart';
-import 'package:btiui/models/user_model.dart';
+import 'package:btiui/models/nearby_user_model_db.dart';
+import 'package:btiui/services/storage_service.dart';
+import 'package:btiui/services/user_db_info.dart';
+
 import 'editprofile.dart';
+import 'home_remote.dart';
+import 'home_remote_prompt.dart';
 import 'filters.dart';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
 import 'dart:math';
+
+// Database
 import '../services/database.dart';
+import 'package:provider/provider.dart';
+import 'package:btiui/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:btiui/models/user_model_db.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:location/location.dart';
+import 'package:btiui/models/location_model.dart';
+
+// Auth
+import 'package:btiui/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Home extends StatefulWidget {
@@ -31,32 +41,6 @@ class _HomeState extends State<Home> {
       builder: (BuildContext context) => CupertinoAlertDialog(
         title: const Text('Report User'),
         content: const Text('Do you want to report this user?'),
-        actions: <CupertinoDialogAction>[
-          CupertinoDialogAction(
-            child: const Text('No'),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          CupertinoDialogAction(
-            child: const Text('Yes'),
-            isDestructiveAction: true,
-            onPressed: () {
-              // Do something destructive.
-            },
-          )
-        ],
-      ),
-    );
-  }
-
-  void tapHideProfile() {
-    showCupertinoDialog<void>(
-      context: context,
-      builder: (BuildContext context) => CupertinoAlertDialog(
-        title: const Text('Hide Profile'),
-        content: const Text(
-            'Do you want to hide your profile? You will not be able to see other profiles or be seen'),
         actions: <CupertinoDialogAction>[
           CupertinoDialogAction(
             child: const Text('No'),
@@ -106,7 +90,11 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void tapSettings() {
+  void tapSettings(bool hidden) {
+    var hide = "Hide Profile";
+    if (hidden == true) {
+      hide = "Unhide Profile";
+    }
     showDialog(
       context: context,
       builder: (context) {
@@ -131,11 +119,13 @@ class _HomeState extends State<Home> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    tapHideProfile();
+                    print(hide);
+                    DatabaseService().hideUser(!hidden);
+                    Navigator.pop(context);
                   },
                   child: ListTile(
                     leading: Icon(Icons.snooze),
-                    title: Text('Hide Profile'),
+                    title: Text(hide),
                     trailing: Icon(Icons.navigate_next),
                   ),
                 ),
@@ -171,7 +161,7 @@ class _HomeState extends State<Home> {
             padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
             child: ListView(
               shrinkWrap: true,
-              children: const <Widget>[
+              children: <Widget>[
                 SizedBox(height: 10),
                 Center(
                   child: Text(
@@ -183,29 +173,81 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                 ),
-                ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: Color(0xffc4c4c4),
-                    radius: 25,
-                    // ignore: prefer_const_constructors
-                    child: CircleAvatar(
-                      backgroundImage: const AssetImage('images/prof.jpeg'),
-                      radius: 23,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                    tapNearbyUser(
+                        "Jim",
+                        "40ft",
+                        "Data Science Manger - Customer Experience",
+                        "I like to Golf",
+                        "I have a German Shepard",
+                        "I am restoring a sailboat",
+                        "p1");
+                  },
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Color(0xff79DFFF),
+                      radius: 26,
+                      // ignore: prefer_const_constructors
+                      child: CircleAvatar(
+                        backgroundImage: const AssetImage('images/p1.jpeg'),
+                        radius: 23,
+                      ),
                     ),
+                    title: Text('Jim waved at you'),
                   ),
-                  title: Text('Eric waved at You'),
                 ),
-                ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: Color(0xffc4c4c4),
-                    radius: 25,
-                    // ignore: prefer_const_constructors
-                    child: CircleAvatar(
-                      backgroundImage: const AssetImage('images/prof.jpeg'),
-                      radius: 23,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+
+                    tapNearbyUser(
+                        "Hannah",
+                        "40ft",
+                        "Software Engineer - UI",
+                        "I have 2 dogs",
+                        "My favorite movie is Forrest Gump",
+                        "Cycling in the Bay",
+                        "p3");
+                  },
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Color(0xff79DFFF),
+                      radius: 26,
+                      // ignore: prefer_const_constructors
+                      child: CircleAvatar(
+                        backgroundImage: const AssetImage('images/p3.jpeg'),
+                        radius: 23,
+                      ),
                     ),
+                    title: Text('Hannah waved at you'),
                   ),
-                  title: Text('You waved at Eric'),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                    tapNearbyUser(
+                        "Angela",
+                        "20ft",
+                        "Head of Marketing - Enterprise",
+                        "My favorite coffee is from Columbia",
+                        "I recently went on a trip to Italy",
+                        "I like to run marathons",
+                        "p2");
+                  },
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Color(0xffc4c4c4),
+                      radius: 26,
+                      // ignore: prefer_const_constructors
+                      child: CircleAvatar(
+                        backgroundImage: const AssetImage('images/p2.jpeg'),
+                        radius: 23,
+                      ),
+                    ),
+                    title: Text('You viewed and waved at Angela'),
+                  ),
                 ),
                 SizedBox(height: 10),
               ],
@@ -216,7 +258,8 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void tapNearbyUser() {
+  void tapNearbyUser(String fname, String lastActive, String headline,
+      String f1, String f2, String f3, String imageID) {
     showDialog(
       context: context,
       builder: (context) {
@@ -241,10 +284,10 @@ class _HomeState extends State<Home> {
                                 topLeft: Radius.circular(40.0)),
                             child: Image(
                               // make sure all images going in are square
-                              image: AssetImage('images/prof.jpeg'),
+                              image: NetworkImage(imageID),
                               height: (MediaQuery.of(context).size.width) - 70,
                               width: (MediaQuery.of(context).size.width) - 70,
-                              fit: BoxFit.fitWidth,
+                              fit: BoxFit.fill,
                             ),
                           ),
                         ),
@@ -261,7 +304,7 @@ class _HomeState extends State<Home> {
                               child: Icon(
                                 Icons.close,
                                 size: 30,
-                                color: Color(0xff5a5a5a),
+                                color: Color(0xffffffff),
                               ),
                             ),
                           ),
@@ -273,7 +316,7 @@ class _HomeState extends State<Home> {
                   RichText(
                     text: TextSpan(children: <TextSpan>[
                       TextSpan(
-                        text: "Eric ",
+                        text: "$fname",
                         style: const TextStyle(
                           fontWeight: FontWeight.w700,
                           color: Color(0xff5a5a5a),
@@ -281,7 +324,7 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                       TextSpan(
-                        text: "50ft",
+                        text: "",
                         style: const TextStyle(
                           fontWeight: FontWeight.w400,
                           color: Color(0xff5a5a5a),
@@ -291,7 +334,7 @@ class _HomeState extends State<Home> {
                     ]),
                   ),
                   Text(
-                    'Data Scientist at Ford',
+                    headline,
                     style: TextStyle(
                       fontWeight: FontWeight.w300,
                       color: Color(0xff5a5a5a),
@@ -312,11 +355,11 @@ class _HomeState extends State<Home> {
                   ),
                   ListView(
                     shrinkWrap: true,
-                    children: const <Widget>[
+                    children: <Widget>[
                       ListTile(
                         leading: Icon(Icons.question_answer_outlined),
                         title: Text(
-                          'Planes and Aviation',
+                          f1,
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
                             color: Color(0xff5a5a5a),
@@ -328,7 +371,7 @@ class _HomeState extends State<Home> {
                       ListTile(
                         leading: Icon(Icons.question_answer_outlined),
                         title: Text(
-                          'Data Science and Economics',
+                          f2,
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
                             color: Color(0xff5a5a5a),
@@ -340,7 +383,7 @@ class _HomeState extends State<Home> {
                       ListTile(
                         leading: Icon(Icons.question_answer_outlined),
                         title: Text(
-                          'Philosophy and Stoicism',
+                          f3,
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
                             color: Color(0xff5a5a5a),
@@ -349,63 +392,73 @@ class _HomeState extends State<Home> {
                         ),
                         dense: true,
                       ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      ElevatedButton.icon(
-                        onPressed: () {},
-                        icon: Transform.rotate(
-                          angle: 0.52, //set the angel
-                          child: Icon(
-                            //Icons.pan_tool_outlined,
-                            Icons.pan_tool,
-                            size: 20.0,
-                            //color: Color(0xffc4c4c4),
-                            color: Color(0xffffffff),
-                          ),
+                      SizedBox(height: 10),
+                      Text(
+                        'Active $lastActive minutes ago',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xff79DFFF),
+                          fontSize: 20,
                         ),
-                        label: Text('Wave'),
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Color(0xff79DFFF)),
-                          padding: MaterialStateProperty.all(
-                            EdgeInsets.symmetric(
-                                vertical: 12.8, horizontal: 65.0),
-                          ),
-                          textStyle: MaterialStateProperty.all(
-                              TextStyle(fontSize: 18)),
-                        ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
-                  SizedBox(height: 5),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          tapReport();
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.only(right: 22.0, bottom: 5),
-                          child: Text(
-                            'Report',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xffc4c4c4),
-                              fontSize: 14,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  //SizedBox(height: 10),
+                  //Row(
+                  //  mainAxisAlignment: MainAxisAlignment.center,
+                  //  crossAxisAlignment: CrossAxisAlignment.center,
+                  //  children: [
+                  //    ElevatedButton.icon(
+                  //      onPressed: () {},
+                  //      icon: Transform.rotate(
+                  //        angle: 0.52, //set the angel
+                  //        child: Icon(
+                  //          //Icons.pan_tool_outlined,
+                  //          Icons.pan_tool,
+                  //          size: 20.0,
+                  //          //color: Color(0xffc4c4c4),
+                  //          color: Color(0xffffffff),
+                  //        ),
+                  //      ),
+                  //      label: Text('Wave'),
+                  //      style: ButtonStyle(
+                  //        backgroundColor:
+                  //            MaterialStateProperty.all(Color(0xff79DFFF)),
+                  //        padding: MaterialStateProperty.all(
+                  //          EdgeInsets.symmetric(
+                  //              vertical: 12.8, horizontal: 65.0),
+                  //        ),
+                  //        textStyle: MaterialStateProperty.all(
+                  //            TextStyle(fontSize: 18)),
+                  //      ),
+                  //    ),
+                  //  ],
+                  //),
+                  SizedBox(height: 20),
+                  //Row(
+                  //  mainAxisAlignment: MainAxisAlignment.end,
+                  //  crossAxisAlignment: CrossAxisAlignment.start,
+                  //  children: [
+                  //    GestureDetector(
+                  //      onTap: () {
+                  //        tapReport();
+                  //      },
+                  //      child: Container(
+                  //        margin: const EdgeInsets.only(right: 22.0, bottom: 5),
+                  //        child: Text(
+                  //          'Report',
+                  //          style: TextStyle(
+                  //            fontWeight: FontWeight.w500,
+                  //            color: Color(0xffc4c4c4),
+                  //            fontSize: 14,
+                  //          ),
+                  //          textAlign: TextAlign.center,
+                  //        ),
+                  //      ),
+                  //    ),
+                  //  ],
+                  //),
                 ],
               ),
             ),
@@ -415,13 +468,8 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void tapOwnProfile() {
-    final userAttrDB = Provider.of<List<UserAttDB>>(context, listen: false);
-    var fname = userAttrDB[0].fname;
-    var headline = userAttrDB[0].headline;
-    var f1 = userAttrDB[0].f1;
-    var f2 = userAttrDB[0].f2;
-    var f3 = userAttrDB[0].f3;
+  void tapOwnProfile(String fname, String headline, String f1, String f2,
+      String f3, String imageID) {
     showDialog(
       context: context,
       builder: (context) {
@@ -448,10 +496,10 @@ class _HomeState extends State<Home> {
                                 topLeft: Radius.circular(40.0)),
                             child: Image(
                               // make sure all images going in are square
-                              image: AssetImage('images/prof.jpeg'),
+                              image: NetworkImage(imageID),
                               height: (MediaQuery.of(context).size.width) - 70,
                               width: (MediaQuery.of(context).size.width) - 70,
-                              fit: BoxFit.fitWidth,
+                              fit: BoxFit.fill,
                             ),
                           ),
                         ),
@@ -468,7 +516,7 @@ class _HomeState extends State<Home> {
                               child: Icon(
                                 Icons.close,
                                 size: 30,
-                                color: Color(0xff5a5a5a),
+                                color: Color(0xffffffff),
                               ),
                             ),
                           ),
@@ -484,7 +532,7 @@ class _HomeState extends State<Home> {
                         RichText(
                           text: TextSpan(children: <TextSpan>[
                             TextSpan(
-                              text: "${fname}",
+                              text: fname,
                               style: const TextStyle(
                                 fontWeight: FontWeight.w700,
                                 color: Color(0xff5a5a5a),
@@ -494,7 +542,7 @@ class _HomeState extends State<Home> {
                           ]),
                         ),
                         Text(
-                          '${headline}',
+                          headline,
                           style: TextStyle(
                             fontWeight: FontWeight.w300,
                             color: Color(0xff5a5a5a),
@@ -519,7 +567,7 @@ class _HomeState extends State<Home> {
                             ListTile(
                               leading: Icon(Icons.question_answer_outlined),
                               title: Text(
-                                '${f1}',
+                                f1,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   color: Color(0xff5a5a5a),
@@ -531,7 +579,7 @@ class _HomeState extends State<Home> {
                             ListTile(
                               leading: Icon(Icons.question_answer_outlined),
                               title: Text(
-                                '${f2}',
+                                f2,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   color: Color(0xff5a5a5a),
@@ -543,7 +591,7 @@ class _HomeState extends State<Home> {
                             ListTile(
                               leading: Icon(Icons.question_answer_outlined),
                               title: Text(
-                                '${f3}',
+                                f3,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   color: Color(0xff5a5a5a),
@@ -606,47 +654,1699 @@ class _HomeState extends State<Home> {
     }
   }
 
-  Widget nearbyUsersDisplay(List<UserAttDB>? nbUsers) {
-    if (nbUsers?.length == 1) {
-      return Positioned(
-        top: (MediaQuery.of(context).size.height / 4.5),
-        left: (MediaQuery.of(context).size.width / 2) - screenSizeAva(),
-        child: GestureDetector(
-          onTap: () {
-            tapNearbyUser();
-          },
-          child: avatarGen(0xffc4c4c4, screenSizeAva(), "Eric", ""),
-        ),
-      );
-    } else {
-      return Positioned(
-        top: (MediaQuery.of(context).size.height / 4.5),
-        left: (MediaQuery.of(context).size.width / 2) - screenSizeAva(),
-        child: Text("No users found!"),
-      );
-    }
+  @override
+  void initState() {
+    super.initState();
+    // Update location
+    //DatabaseService().updateLocation();
+    //const waitTime = Duration(seconds: 60);
+    //Timer.periodic(waitTime, (Timer t) => DatabaseService().updateLocation());
   }
-
-  // init nearby users
-  List<DocumentSnapshot>? nearbyUsers = null;
 
   @override
   Widget build(BuildContext context) {
     // Streams
     final user = Provider.of<UserAtt?>(context);
-    final userAttd = Provider.of<UserAttDB?>(context);
-    final userLocs = Provider.of<List<UserLoc>>(context);
+    final userAttd2 = Provider.of<UserAttDbInfo?>(context, listen: false);
+    final nearbyUserAttr = Provider.of<List<NearUserAttDB>>(context);
 
-    if (userLocs.length > 0) {
-      print("nearby users:");
-      userLocs.forEach((element) {
-        print(element.uid);
-      });
+    //nearbyUserAttr.removeLast();
+    //print(nearbyUserAttr.length);
+    if (nearbyUserAttr.length > 1) {
+      nearbyUserAttr.sort(
+          (a, b) => int.parse(a.distance!).compareTo(int.parse(b.distance!)));
+      //nearbyUserAttr.reversed;
     }
 
-    // Update location
-    const waitTime = Duration(seconds: 30);
-    Timer.periodic(waitTime, (Timer t) => DatabaseService().updateLocation());
+    List<Widget> displayUsers(List<NearUserAttDB> users) {
+      if (userAttd2?.user?.hidden == true) {
+        return <Widget>[
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 1.5),
+            left: (MediaQuery.of(context).size.width / 2) - 100,
+            child: RichText(
+              text: const TextSpan(children: <TextSpan>[
+                TextSpan(
+                  text: 'Your profile is hidden. \nUnhide to see others!',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xff79DFFF),
+                    fontSize: 18,
+                  ),
+                ),
+              ]),
+            ),
+          ),
+        ];
+      }
+      if (users.length == 1) {
+        return <Widget>[
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 4.5),
+            left: (MediaQuery.of(context).size.width / 2) - screenSizeAva(),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[0].fname ?? "",
+                    users[0].lastActive ?? "",
+                    users[0].headline ?? "",
+                    users[0].f1 ?? "",
+                    users[0].f2 ?? "",
+                    users[0].f3 ?? "",
+                    users[0].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[0].fname ?? "",
+                  (users[0].distance ?? "") + "ft",
+                  users[0].profileURL ?? ""),
+            ),
+          ),
+        ];
+      }
+      if (users.length == 2) {
+        return <Widget>[
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 4.5),
+            left: (MediaQuery.of(context).size.width / 2) - screenSizeAva(),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[0].fname ?? "",
+                    users[0].lastActive ?? "",
+                    users[0].headline ?? "",
+                    users[0].f1 ?? "",
+                    users[0].f2 ?? "",
+                    users[0].f3 ?? "",
+                    users[0].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[0].fname ?? "",
+                  (users[0].distance ?? "") + "ft",
+                  users[0].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 3.5),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[1].fname ?? "",
+                    users[1].lastActive ?? "",
+                    users[1].headline ?? "",
+                    users[1].f1 ?? "",
+                    users[1].f2 ?? "",
+                    users[1].f3 ?? "",
+                    users[1].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[1].fname ?? "",
+                  (users[1].distance ?? "") + "ft",
+                  users[1].profileURL ?? ""),
+            ),
+          ),
+        ];
+      }
+      if (users.length == 3) {
+        return <Widget>[
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 4.5),
+            left: (MediaQuery.of(context).size.width / 2) - screenSizeAva(),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[0].fname ?? "",
+                    users[0].lastActive ?? "",
+                    users[0].headline ?? "",
+                    users[0].f1 ?? "",
+                    users[0].f2 ?? "",
+                    users[0].f3 ?? "",
+                    users[0].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[0].fname ?? "",
+                  (users[0].distance ?? "") + "ft",
+                  users[0].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 3.5),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[1].fname ?? "",
+                    users[1].lastActive ?? "",
+                    users[1].headline ?? "",
+                    users[1].f1 ?? "",
+                    users[1].f2 ?? "",
+                    users[1].f3 ?? "",
+                    users[1].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[1].fname ?? "",
+                  (users[1].distance ?? "") + "ft",
+                  users[1].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 3.5),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[2].fname ?? "",
+                    users[2].lastActive ?? "",
+                    users[2].headline ?? "",
+                    users[2].f1 ?? "",
+                    users[2].f2 ?? "",
+                    users[2].f3 ?? "",
+                    users[2].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[2].fname ?? "",
+                  (users[2].distance ?? "") + "ft",
+                  users[2].profileURL ?? ""),
+            ),
+          ),
+        ];
+      }
+      if (users.length == 4) {
+        return <Widget>[
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 4.5),
+            left: (MediaQuery.of(context).size.width / 2) - screenSizeAva(),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[0].fname ?? "",
+                    users[0].lastActive ?? "",
+                    users[0].headline ?? "",
+                    users[0].f1 ?? "",
+                    users[0].f2 ?? "",
+                    users[0].f3 ?? "",
+                    users[0].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[0].fname ?? "",
+                  (users[0].distance ?? "") + "ft",
+                  users[0].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 3.5),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[1].fname ?? "",
+                    users[1].lastActive ?? "",
+                    users[1].headline ?? "",
+                    users[1].f1 ?? "",
+                    users[1].f2 ?? "",
+                    users[1].f3 ?? "",
+                    users[1].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[1].fname ?? "",
+                  (users[1].distance ?? "") + "ft",
+                  users[1].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 3.5),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[2].fname ?? "",
+                    users[2].lastActive ?? "",
+                    users[2].headline ?? "",
+                    users[2].f1 ?? "",
+                    users[2].f2 ?? "",
+                    users[2].f3 ?? "",
+                    users[2].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[2].fname ?? "",
+                  (users[2].distance ?? "") + "ft",
+                  users[2].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 3.5),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[3].fname ?? "",
+                    users[3].lastActive ?? "",
+                    users[3].headline ?? "",
+                    users[3].f1 ?? "",
+                    users[3].f2 ?? "",
+                    users[3].f3 ?? "",
+                    users[3].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[3].fname ?? "",
+                  (users[3].distance ?? "") + "ft",
+                  users[3].profileURL ?? ""),
+            ),
+          ),
+        ];
+      }
+      if (users.length == 5) {
+        return <Widget>[
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 4.5),
+            left: (MediaQuery.of(context).size.width / 2) - screenSizeAva(),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[0].fname ?? "",
+                    users[0].lastActive ?? "",
+                    users[0].headline ?? "",
+                    users[0].f1 ?? "",
+                    users[0].f2 ?? "",
+                    users[0].f3 ?? "",
+                    users[0].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[0].fname ?? "",
+                  (users[0].distance ?? "") + "ft",
+                  users[0].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 3.5),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[1].fname ?? "",
+                    users[1].lastActive ?? "",
+                    users[1].headline ?? "",
+                    users[1].f1 ?? "",
+                    users[1].f2 ?? "",
+                    users[1].f3 ?? "",
+                    users[1].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[1].fname ?? "",
+                  (users[1].distance ?? "") + "ft",
+                  users[1].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 3.5),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[2].fname ?? "",
+                    users[2].lastActive ?? "",
+                    users[2].headline ?? "",
+                    users[2].f1 ?? "",
+                    users[2].f2 ?? "",
+                    users[2].f3 ?? "",
+                    users[2].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[2].fname ?? "",
+                  (users[2].distance ?? "") + "ft",
+                  users[2].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 3.5),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[3].fname ?? "",
+                    users[3].lastActive ?? "",
+                    users[3].headline ?? "",
+                    users[3].f1 ?? "",
+                    users[3].f2 ?? "",
+                    users[3].f3 ?? "",
+                    users[3].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[3].fname ?? "",
+                  (users[3].distance ?? "") + "ft",
+                  users[3].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 3.5),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[4].fname ?? "",
+                    users[4].lastActive ?? "",
+                    users[4].headline ?? "",
+                    users[4].f1 ?? "",
+                    users[4].f2 ?? "",
+                    users[4].f3 ?? "",
+                    users[4].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[4].fname ?? "",
+                  (users[4].distance ?? "") + "ft",
+                  users[4].profileURL ?? ""),
+            ),
+          ),
+        ];
+      }
+      if (users.length == 6) {
+        return <Widget>[
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 4.5),
+            left: (MediaQuery.of(context).size.width / 2) - screenSizeAva(),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[0].fname ?? "",
+                    users[0].lastActive ?? "",
+                    users[0].headline ?? "",
+                    users[0].f1 ?? "",
+                    users[0].f2 ?? "",
+                    users[0].f3 ?? "",
+                    users[0].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[0].fname ?? "",
+                  (users[0].distance ?? "") + "ft",
+                  users[0].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 3.5),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[1].fname ?? "",
+                    users[1].lastActive ?? "",
+                    users[1].headline ?? "",
+                    users[1].f1 ?? "",
+                    users[1].f2 ?? "",
+                    users[1].f3 ?? "",
+                    users[1].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[1].fname ?? "",
+                  (users[1].distance ?? "") + "ft",
+                  users[1].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 3.5),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[2].fname ?? "",
+                    users[2].lastActive ?? "",
+                    users[2].headline ?? "",
+                    users[2].f1 ?? "",
+                    users[2].f2 ?? "",
+                    users[2].f3 ?? "",
+                    users[2].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[2].fname ?? "",
+                  (users[2].distance ?? "") + "ft",
+                  users[2].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 3.5),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[3].fname ?? "",
+                    users[3].lastActive ?? "",
+                    users[3].headline ?? "",
+                    users[3].f1 ?? "",
+                    users[3].f2 ?? "",
+                    users[3].f3 ?? "",
+                    users[3].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[3].fname ?? "",
+                  (users[3].distance ?? "") + "ft",
+                  users[3].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 3.5),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[4].fname ?? "",
+                    users[4].lastActive ?? "",
+                    users[4].headline ?? "",
+                    users[4].f1 ?? "",
+                    users[4].f2 ?? "",
+                    users[4].f3 ?? "",
+                    users[4].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[4].fname ?? "",
+                  (users[4].distance ?? "") + "ft",
+                  users[4].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 9),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[5].fname ?? "",
+                    users[5].lastActive ?? "",
+                    users[5].headline ?? "",
+                    users[5].f1 ?? "",
+                    users[5].f2 ?? "",
+                    users[5].f3 ?? "",
+                    users[5].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[5].fname ?? "",
+                  (users[5].distance ?? "") + "ft",
+                  users[5].profileURL ?? ""),
+            ),
+          ),
+        ];
+      }
+      if (users.length == 7) {
+        return <Widget>[
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 4.5),
+            left: (MediaQuery.of(context).size.width / 2) - screenSizeAva(),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[0].fname ?? "",
+                    users[0].lastActive ?? "",
+                    users[0].headline ?? "",
+                    users[0].f1 ?? "",
+                    users[0].f2 ?? "",
+                    users[0].f3 ?? "",
+                    users[0].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[0].fname ?? "",
+                  (users[0].distance ?? "") + "ft",
+                  users[0].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 3.5),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[1].fname ?? "",
+                    users[1].lastActive ?? "",
+                    users[1].headline ?? "",
+                    users[1].f1 ?? "",
+                    users[1].f2 ?? "",
+                    users[1].f3 ?? "",
+                    users[1].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[1].fname ?? "",
+                  (users[1].distance ?? "") + "ft",
+                  users[1].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 3.5),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[2].fname ?? "",
+                    users[2].lastActive ?? "",
+                    users[2].headline ?? "",
+                    users[2].f1 ?? "",
+                    users[2].f2 ?? "",
+                    users[2].f3 ?? "",
+                    users[2].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[2].fname ?? "",
+                  (users[2].distance ?? "") + "ft",
+                  users[2].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 3.5),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[3].fname ?? "",
+                    users[3].lastActive ?? "",
+                    users[3].headline ?? "",
+                    users[3].f1 ?? "",
+                    users[3].f2 ?? "",
+                    users[3].f3 ?? "",
+                    users[3].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[3].fname ?? "",
+                  (users[3].distance ?? "") + "ft",
+                  users[3].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 3.5),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[4].fname ?? "",
+                    users[4].lastActive ?? "",
+                    users[4].headline ?? "",
+                    users[4].f1 ?? "",
+                    users[4].f2 ?? "",
+                    users[4].f3 ?? "",
+                    users[4].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[4].fname ?? "",
+                  (users[4].distance ?? "") + "ft",
+                  users[4].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 9),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[5].fname ?? "",
+                    users[5].lastActive ?? "",
+                    users[5].headline ?? "",
+                    users[5].f1 ?? "",
+                    users[5].f2 ?? "",
+                    users[5].f3 ?? "",
+                    users[5].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[5].fname ?? "",
+                  (users[5].distance ?? "") + "ft",
+                  users[5].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 9),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[6].fname ?? "",
+                    users[6].lastActive ?? "",
+                    users[6].headline ?? "",
+                    users[6].f1 ?? "",
+                    users[6].f2 ?? "",
+                    users[6].f3 ?? "",
+                    users[6].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[6].fname ?? "",
+                  (users[6].distance ?? "") + "ft",
+                  users[6].profileURL ?? ""),
+            ),
+          ),
+        ];
+      }
+      if (users.length == 8) {
+        return <Widget>[
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 4.5),
+            left: (MediaQuery.of(context).size.width / 2) - screenSizeAva(),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[0].fname ?? "",
+                    users[0].lastActive ?? "",
+                    users[0].headline ?? "",
+                    users[0].f1 ?? "",
+                    users[0].f2 ?? "",
+                    users[0].f3 ?? "",
+                    users[0].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[0].fname ?? "",
+                  (users[0].distance ?? "") + "ft",
+                  users[0].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 3.5),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[1].fname ?? "",
+                    users[1].lastActive ?? "",
+                    users[1].headline ?? "",
+                    users[1].f1 ?? "",
+                    users[1].f2 ?? "",
+                    users[1].f3 ?? "",
+                    users[1].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[1].fname ?? "",
+                  (users[1].distance ?? "") + "ft",
+                  users[1].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 3.5),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[2].fname ?? "",
+                    users[2].lastActive ?? "",
+                    users[2].headline ?? "",
+                    users[2].f1 ?? "",
+                    users[2].f2 ?? "",
+                    users[2].f3 ?? "",
+                    users[2].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[2].fname ?? "",
+                  (users[2].distance ?? "") + "ft",
+                  users[2].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 3.5),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[3].fname ?? "",
+                    users[3].lastActive ?? "",
+                    users[3].headline ?? "",
+                    users[3].f1 ?? "",
+                    users[3].f2 ?? "",
+                    users[3].f3 ?? "",
+                    users[3].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[3].fname ?? "",
+                  (users[3].distance ?? "") + "ft",
+                  users[3].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 3.5),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[4].fname ?? "",
+                    users[4].lastActive ?? "",
+                    users[4].headline ?? "",
+                    users[4].f1 ?? "",
+                    users[4].f2 ?? "",
+                    users[4].f3 ?? "",
+                    users[4].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[4].fname ?? "",
+                  (users[4].distance ?? "") + "ft",
+                  users[4].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 9),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[5].fname ?? "",
+                    users[5].lastActive ?? "",
+                    users[5].headline ?? "",
+                    users[5].f1 ?? "",
+                    users[5].f2 ?? "",
+                    users[5].f3 ?? "",
+                    users[5].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[5].fname ?? "",
+                  (users[5].distance ?? "") + "ft",
+                  users[5].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 9),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[6].fname ?? "",
+                    users[6].lastActive ?? "",
+                    users[6].headline ?? "",
+                    users[6].f1 ?? "",
+                    users[6].f2 ?? "",
+                    users[6].f3 ?? "",
+                    users[6].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[6].fname ?? "",
+                  (users[6].distance ?? "") + "ft",
+                  users[6].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 9),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[7].fname ?? "",
+                    users[7].lastActive ?? "",
+                    users[7].headline ?? "",
+                    users[7].f1 ?? "",
+                    users[7].f2 ?? "",
+                    users[7].f3 ?? "",
+                    users[7].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[7].fname ?? "",
+                  (users[7].distance ?? "") + "ft",
+                  users[7].profileURL ?? ""),
+            ),
+          ),
+        ];
+      }
+      if (users.length == 9) {
+        return <Widget>[
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 4.5),
+            left: (MediaQuery.of(context).size.width / 2) - screenSizeAva(),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[0].fname ?? "",
+                    users[0].lastActive ?? "",
+                    users[0].headline ?? "",
+                    users[0].f1 ?? "",
+                    users[0].f2 ?? "",
+                    users[0].f3 ?? "",
+                    users[0].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[0].fname ?? "",
+                  (users[0].distance ?? "") + "ft",
+                  users[0].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 3.5),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[1].fname ?? "",
+                    users[1].lastActive ?? "",
+                    users[1].headline ?? "",
+                    users[1].f1 ?? "",
+                    users[1].f2 ?? "",
+                    users[1].f3 ?? "",
+                    users[1].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[1].fname ?? "",
+                  (users[1].distance ?? "") + "ft",
+                  users[1].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 3.5),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[2].fname ?? "",
+                    users[2].lastActive ?? "",
+                    users[2].headline ?? "",
+                    users[2].f1 ?? "",
+                    users[2].f2 ?? "",
+                    users[2].f3 ?? "",
+                    users[2].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[2].fname ?? "",
+                  (users[2].distance ?? "") + "ft",
+                  users[2].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 3.5),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[3].fname ?? "",
+                    users[3].lastActive ?? "",
+                    users[3].headline ?? "",
+                    users[3].f1 ?? "",
+                    users[3].f2 ?? "",
+                    users[3].f3 ?? "",
+                    users[3].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[3].fname ?? "",
+                  (users[3].distance ?? "") + "ft",
+                  users[3].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 3.5),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[4].fname ?? "",
+                    users[4].lastActive ?? "",
+                    users[4].headline ?? "",
+                    users[4].f1 ?? "",
+                    users[4].f2 ?? "",
+                    users[4].f3 ?? "",
+                    users[4].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[4].fname ?? "",
+                  (users[4].distance ?? "") + "ft",
+                  users[4].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 9),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[5].fname ?? "",
+                    users[5].lastActive ?? "",
+                    users[5].headline ?? "",
+                    users[5].f1 ?? "",
+                    users[5].f2 ?? "",
+                    users[5].f3 ?? "",
+                    users[5].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[5].fname ?? "",
+                  (users[5].distance ?? "") + "ft",
+                  users[5].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 9),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[6].fname ?? "",
+                    users[6].lastActive ?? "",
+                    users[6].headline ?? "",
+                    users[6].f1 ?? "",
+                    users[6].f2 ?? "",
+                    users[6].f3 ?? "",
+                    users[6].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[6].fname ?? "",
+                  (users[6].distance ?? "") + "ft",
+                  users[6].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 9),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[7].fname ?? "",
+                    users[7].lastActive ?? "",
+                    users[7].headline ?? "",
+                    users[7].f1 ?? "",
+                    users[7].f2 ?? "",
+                    users[7].f3 ?? "",
+                    users[7].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[7].fname ?? "",
+                  (users[7].distance ?? "") + "ft",
+                  users[7].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 9),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[8].fname ?? "",
+                    users[8].lastActive ?? "",
+                    users[8].headline ?? "",
+                    users[8].f1 ?? "",
+                    users[8].f2 ?? "",
+                    users[8].f3 ?? "",
+                    users[8].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[8].fname ?? "",
+                  (users[8].distance ?? "") + "ft",
+                  users[8].profileURL ?? ""),
+            ),
+          ),
+        ];
+      }
+      if (users.length == 10) {
+        return <Widget>[
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 4.5),
+            left: (MediaQuery.of(context).size.width / 2) - screenSizeAva(),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[0].fname ?? "",
+                    users[0].lastActive ?? "",
+                    users[0].headline ?? "",
+                    users[0].f1 ?? "",
+                    users[0].f2 ?? "",
+                    users[0].f3 ?? "",
+                    users[0].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[0].fname ?? "",
+                  (users[0].distance ?? "") + "ft",
+                  users[0].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 3.5),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[1].fname ?? "",
+                    users[1].lastActive ?? "",
+                    users[1].headline ?? "",
+                    users[1].f1 ?? "",
+                    users[1].f2 ?? "",
+                    users[1].f3 ?? "",
+                    users[1].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[1].fname ?? "",
+                  (users[1].distance ?? "") + "ft",
+                  users[1].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 3.5),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[2].fname ?? "",
+                    users[2].lastActive ?? "",
+                    users[2].headline ?? "",
+                    users[2].f1 ?? "",
+                    users[2].f2 ?? "",
+                    users[2].f3 ?? "",
+                    users[2].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[2].fname ?? "",
+                  (users[2].distance ?? "") + "ft",
+                  users[2].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 3.5),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[3].fname ?? "",
+                    users[3].lastActive ?? "",
+                    users[3].headline ?? "",
+                    users[3].f1 ?? "",
+                    users[3].f2 ?? "",
+                    users[3].f3 ?? "",
+                    users[3].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[3].fname ?? "",
+                  (users[3].distance ?? "") + "ft",
+                  users[3].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 3.5),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[4].fname ?? "",
+                    users[4].lastActive ?? "",
+                    users[4].headline ?? "",
+                    users[4].f1 ?? "",
+                    users[4].f2 ?? "",
+                    users[4].f3 ?? "",
+                    users[4].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[4].fname ?? "",
+                  (users[4].distance ?? "") + "ft",
+                  users[4].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 9),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[5].fname ?? "",
+                    users[5].lastActive ?? "",
+                    users[5].headline ?? "",
+                    users[5].f1 ?? "",
+                    users[5].f2 ?? "",
+                    users[5].f3 ?? "",
+                    users[5].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[5].fname ?? "",
+                  (users[5].distance ?? "") + "ft",
+                  users[5].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 9),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[6].fname ?? "",
+                    users[6].lastActive ?? "",
+                    users[6].headline ?? "",
+                    users[6].f1 ?? "",
+                    users[6].f2 ?? "",
+                    users[6].f3 ?? "",
+                    users[6].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[6].fname ?? "",
+                  (users[6].distance ?? "") + "ft",
+                  users[6].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 9),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[7].fname ?? "",
+                    users[7].lastActive ?? "",
+                    users[7].headline ?? "",
+                    users[7].f1 ?? "",
+                    users[7].f2 ?? "",
+                    users[7].f3 ?? "",
+                    users[7].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[7].fname ?? "",
+                  (users[7].distance ?? "") + "ft",
+                  users[7].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 9),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[8].fname ?? "",
+                    users[8].lastActive ?? "",
+                    users[8].headline ?? "",
+                    users[8].f1 ?? "",
+                    users[8].f2 ?? "",
+                    users[8].f3 ?? "",
+                    users[8].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[8].fname ?? "",
+                  (users[8].distance ?? "") + "ft",
+                  users[8].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 5.5),
+            left: (MediaQuery.of(context).size.width / 2) - screenSizeAva(),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[9].fname ?? "",
+                    users[9].lastActive ?? "",
+                    users[9].headline ?? "",
+                    users[9].f1 ?? "",
+                    users[9].f2 ?? "",
+                    users[9].f3 ?? "",
+                    users[9].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[9].fname ?? "",
+                  (users[9].distance ?? "") + "ft",
+                  users[9].profileURL ?? ""),
+            ),
+          ),
+        ];
+      }
+      if (users.length > 10) {
+        return <Widget>[
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 4.5),
+            left: (MediaQuery.of(context).size.width / 2) - screenSizeAva(),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[0].fname ?? "",
+                    users[0].lastActive ?? "",
+                    users[0].headline ?? "",
+                    users[0].f1 ?? "",
+                    users[0].f2 ?? "",
+                    users[0].f3 ?? "",
+                    users[0].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[0].fname ?? "",
+                  (users[0].distance ?? "") + "ft",
+                  users[0].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 3.5),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[1].fname ?? "",
+                    users[1].lastActive ?? "",
+                    users[1].headline ?? "",
+                    users[1].f1 ?? "",
+                    users[1].f2 ?? "",
+                    users[1].f3 ?? "",
+                    users[1].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[1].fname ?? "",
+                  (users[1].distance ?? "") + "ft",
+                  users[1].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 3.5),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[2].fname ?? "",
+                    users[2].lastActive ?? "",
+                    users[2].headline ?? "",
+                    users[2].f1 ?? "",
+                    users[2].f2 ?? "",
+                    users[2].f3 ?? "",
+                    users[2].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[2].fname ?? "",
+                  (users[2].distance ?? "") + "ft",
+                  users[2].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 3.5),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[3].fname ?? "",
+                    users[3].lastActive ?? "",
+                    users[3].headline ?? "",
+                    users[3].f1 ?? "",
+                    users[3].f2 ?? "",
+                    users[3].f3 ?? "",
+                    users[3].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[3].fname ?? "",
+                  (users[3].distance ?? "") + "ft",
+                  users[3].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 3.5),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[4].fname ?? "",
+                    users[4].lastActive ?? "",
+                    users[4].headline ?? "",
+                    users[4].f1 ?? "",
+                    users[4].f2 ?? "",
+                    users[4].f3 ?? "",
+                    users[4].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[4].fname ?? "",
+                  (users[4].distance ?? "") + "ft",
+                  users[4].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 9),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[5].fname ?? "",
+                    users[5].lastActive ?? "",
+                    users[5].headline ?? "",
+                    users[5].f1 ?? "",
+                    users[5].f2 ?? "",
+                    users[5].f3 ?? "",
+                    users[5].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[5].fname ?? "",
+                  (users[5].distance ?? "") + "ft",
+                  users[5].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 9),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[6].fname ?? "",
+                    users[6].lastActive ?? "",
+                    users[6].headline ?? "",
+                    users[6].f1 ?? "",
+                    users[6].f2 ?? "",
+                    users[6].f3 ?? "",
+                    users[6].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[6].fname ?? "",
+                  (users[6].distance ?? "") + "ft",
+                  users[6].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 9),
+            left: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[7].fname ?? "",
+                    users[7].lastActive ?? "",
+                    users[7].headline ?? "",
+                    users[7].f1 ?? "",
+                    users[7].f2 ?? "",
+                    users[7].f3 ?? "",
+                    users[7].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[7].fname ?? "",
+                  (users[7].distance ?? "") + "ft",
+                  users[7].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 9),
+            right: (MediaQuery.of(context).size.width / 24),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[8].fname ?? "",
+                    users[8].lastActive ?? "",
+                    users[8].headline ?? "",
+                    users[8].f1 ?? "",
+                    users[8].f2 ?? "",
+                    users[8].f3 ?? "",
+                    users[8].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[8].fname ?? "",
+                  (users[8].distance ?? "") + "ft",
+                  users[8].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            bottom: (MediaQuery.of(context).size.height / 5.5),
+            left: (MediaQuery.of(context).size.width / 2) - screenSizeAva(),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[9].fname ?? "",
+                    users[9].lastActive ?? "",
+                    users[9].headline ?? "",
+                    users[9].f1 ?? "",
+                    users[9].f2 ?? "",
+                    users[9].f3 ?? "",
+                    users[9].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[9].fname ?? "",
+                  (users[9].distance ?? "") + "ft",
+                  users[9].profileURL ?? ""),
+            ),
+          ),
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 21),
+            left: (MediaQuery.of(context).size.width / 2) - screenSizeAva(),
+            child: GestureDetector(
+              onTap: () {
+                tapNearbyUser(
+                    users[10].fname ?? "",
+                    users[10].lastActive ?? "",
+                    users[10].headline ?? "",
+                    users[10].f1 ?? "",
+                    users[10].f2 ?? "",
+                    users[10].f3 ?? "",
+                    users[10].profileURL ?? "");
+              },
+              child: avatarGen(
+                  0xffc4c4c4,
+                  screenSizeAva(),
+                  users[10].fname ?? "",
+                  (users[10].distance ?? "") + "ft",
+                  users[10].profileURL ?? ""),
+            ),
+          ),
+        ];
+      }
+      return <Widget>[];
+    }
+
+    // Populate the UI
+    List<Widget> UIpopulate() {
+      return <Widget>[
+        Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+        ),
+
+        Positioned(
+          top: (MediaQuery.of(context).size.height / 2) - 175,
+          child: conCircles(350),
+        ),
+        Positioned(
+          top: (MediaQuery.of(context).size.height / 2) - 275,
+          child: conCircles(550),
+        ),
+        Positioned(
+          top: (MediaQuery.of(context).size.height / 2) - 375,
+          child: conCircles(750),
+        ),
+        Positioned(
+          bottom: 30,
+          child: RichText(
+            text: const TextSpan(children: <TextSpan>[
+              TextSpan(
+                text: 'Profiles within ',
+                style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xffc4c4c4),
+                  fontSize: 18,
+                ),
+              ),
+              TextSpan(
+                text: '1000ft',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xff79DFFF),
+                  fontSize: 18,
+                ),
+              ),
+            ]),
+          ),
+        ),
+        //Positioned(
+        //  bottom: 25,
+        //  left: 22,
+        //  child: GestureDetector(
+        //    onTap: () {
+        //      tapActivity();
+        //    },
+        //    child: Transform.rotate(
+        //      angle: 0.52, //set the angel
+        //      child: Icon(
+        //        //Icons.pan_tool_outlined,
+        //        Icons.pan_tool,
+        //        size: 40.0,
+        //        //color: Color(0xffc4c4c4),
+        //        color: Color(0xff79DFFF),
+        //      ),
+        //    ),
+        //  ),
+        //),
+        //Positioned(
+        //  bottom: 50,
+        //  left: 64,
+        //  child: GestureDetector(
+        //    onTap: () {
+        //      tapActivity();
+        //    },
+        //    child: RichText(
+        //      text: const TextSpan(children: <TextSpan>[
+        //        TextSpan(
+        //          text: '2',
+        //          style: TextStyle(
+        //            fontWeight: FontWeight.w700,
+        //            color: Color(0xff79DFFF),
+        //            fontSize: 20,
+        //          ),
+        //        ),
+        //      ]),
+        //    ),
+        //  ),
+        //),
+        Positioned(
+          bottom: 32,
+          right: 25,
+          child: GestureDetector(
+            onTap: () {
+              tapSettings(userAttd2?.user?.hidden ?? false);
+            },
+            child: RichText(
+              text: const TextSpan(children: <TextSpan>[
+                TextSpan(
+                  text: '...',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xffc4c4c4),
+                    fontSize: 30,
+                  ),
+                ),
+              ]),
+            ),
+          ),
+        ),
+      ];
+    }
+
+    // Own Profile
+    List<Widget> OwnProfilePopulate() {
+      return <Widget>[
+        Positioned(
+          top: (MediaQuery.of(context).size.height / 2) - 70,
+          child: GestureDetector(
+            onTap: () {
+              tapOwnProfile(
+                  userAttd2?.user?.fname ?? "No name",
+                  userAttd2?.user?.headline ?? "No headline",
+                  userAttd2?.user?.f1 ?? "No fun fact 1",
+                  userAttd2?.user?.f2 ?? "No fun fact 2",
+                  userAttd2?.user?.f3 ?? "No fun fact 3",
+                  userAttd2?.user?.profileURL ?? "");
+            },
+            child: avatarGen(
+                0xff79DFFF,
+                70,
+                userAttd2?.user?.fname ?? "No name",
+                "",
+                userAttd2?.user?.profileURL ?? ""),
+          ),
+        ),
+      ];
+    }
+
+    // Streambuilder - not working
+    List<Widget> UserStreamTest() {
+      return <Widget>[
+        StreamBuilder<List<NearUserAttDB>>(
+            stream: DatabaseService()
+                .allNearbyUsersAttr(DatabaseService().nearbyUsers),
+            builder: (_, AsyncSnapshot<List<NearUserAttDB>> snapshot3) {
+              if (snapshot3.connectionState == ConnectionState.active) {
+                var nUserAttr = snapshot3.data;
+                displayUsers(nUserAttr!);
+              }
+
+              return Text("");
+            })
+      ];
+    }
 
     return MaterialApp(
       title: 'Break The Ice',
@@ -663,252 +2363,9 @@ class _HomeState extends State<Home> {
               children: [
                 Stack(
                   alignment: AlignmentDirectional.center,
-                  children: <Widget>[
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height,
-                    ),
-
-                    Positioned(
-                      top: (MediaQuery.of(context).size.height / 2) - 175,
-                      child: conCircles(350),
-                    ),
-                    Positioned(
-                      top: (MediaQuery.of(context).size.height / 2) - 275,
-                      child: conCircles(550),
-                    ),
-                    Positioned(
-                      top: (MediaQuery.of(context).size.height / 2) - 375,
-                      child: conCircles(750),
-                    ),
-                    Positioned(
-                      bottom: 30,
-                      child: RichText(
-                        text: const TextSpan(children: <TextSpan>[
-                          TextSpan(
-                            text: 'Profiles within ',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              color: Color(0xffc4c4c4),
-                              fontSize: 18,
-                            ),
-                          ),
-                          TextSpan(
-                            text: '500ft',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xff79DFFF),
-                              fontSize: 18,
-                            ),
-                          ),
-                        ]),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 25,
-                      left: 22,
-                      child: GestureDetector(
-                        onTap: () {
-                          tapActivity();
-                        },
-                        child: Transform.rotate(
-                          angle: 0.52, //set the angel
-                          child: Icon(
-                            //Icons.pan_tool_outlined,
-                            Icons.pan_tool,
-                            size: 40.0,
-                            //color: Color(0xffc4c4c4),
-                            color: Color(0xff79DFFF),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 50,
-                      left: 64,
-                      child: GestureDetector(
-                        onTap: () {
-                          tapActivity();
-                        },
-                        child: RichText(
-                          text: const TextSpan(children: <TextSpan>[
-                            TextSpan(
-                              text: '3',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xff79DFFF),
-                                fontSize: 20,
-                              ),
-                            ),
-                          ]),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 32,
-                      right: 25,
-                      child: GestureDetector(
-                        onTap: () {
-                          tapSettings();
-                        },
-                        child: RichText(
-                          text: const TextSpan(children: <TextSpan>[
-                            TextSpan(
-                              text: '...',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w900,
-                                color: Color(0xffc4c4c4),
-                                fontSize: 30,
-                              ),
-                            ),
-                          ]),
-                        ),
-                      ),
-                    ),
-
-                    // Populate with nearby users under here
-                    // Top Row 1
-
-                    Positioned(
-                      top: (MediaQuery.of(context).size.height / 9),
-                      right: (MediaQuery.of(context).size.width / 24),
-                      child: GestureDetector(
-                        onTap: () {
-                          tapNearbyUser();
-                        },
-                        child: avatarGen(
-                            0xffc4c4c4, screenSizeAva(), "Eric", "21ft"),
-                      ),
-                    ),
-                    Positioned(
-                      top: (MediaQuery.of(context).size.height / 21),
-                      left: (MediaQuery.of(context).size.width / 2) -
-                          screenSizeAva(),
-                      child: GestureDetector(
-                        onTap: () {
-                          tapNearbyUser();
-                        },
-                        child: avatarGen(
-                            0xffc4c4c4, screenSizeAva(), "Eric", "21ft"),
-                      ),
-                    ),
-                    Positioned(
-                      top: (MediaQuery.of(context).size.height / 9),
-                      left: (MediaQuery.of(context).size.width / 24),
-                      child: GestureDetector(
-                        onTap: () {
-                          tapNearbyUser();
-                        },
-                        child: avatarGen(
-                            0xffc4c4c4, screenSizeAva(), "Eric", "21ft"),
-                      ),
-                    ),
-                    // Top Row 2
-                    Positioned(
-                      top: (MediaQuery.of(context).size.height / 3.5),
-                      right: (MediaQuery.of(context).size.width / 24),
-                      child: GestureDetector(
-                        onTap: () {
-                          tapNearbyUser();
-                        },
-                        child: avatarGen(
-                            0xffc4c4c4, screenSizeAva(), "Eric", "21ft"),
-                      ),
-                    ),
-                    Positioned(
-                      top: (MediaQuery.of(context).size.height / 4.5),
-                      left: (MediaQuery.of(context).size.width / 2) -
-                          screenSizeAva(),
-                      child: GestureDetector(
-                        onTap: () {
-                          tapNearbyUser();
-                        },
-                        child: avatarGen(
-                            0xffc4c4c4, screenSizeAva(), "Eric", "21ft"),
-                      ),
-                    ),
-                    Positioned(
-                      top: (MediaQuery.of(context).size.height / 3.5),
-                      left: (MediaQuery.of(context).size.width / 24),
-                      child: GestureDetector(
-                        onTap: () {
-                          tapNearbyUser();
-                        },
-                        child: avatarGen(
-                            0xffc4c4c4, screenSizeAva(), "Eric", "21ft"),
-                      ),
-                    ),
-                    // Bottom Row 1
-                    Positioned(
-                      bottom: (MediaQuery.of(context).size.height / 3.5),
-                      right: (MediaQuery.of(context).size.width / 24),
-                      child: GestureDetector(
-                        onTap: () {
-                          tapNearbyUser();
-                        },
-                        child: avatarGen(
-                            0xffc4c4c4, screenSizeAva(), "Eric", "21ft"),
-                      ),
-                    ),
-
-                    Positioned(
-                      bottom: (MediaQuery.of(context).size.height / 3.5),
-                      left: (MediaQuery.of(context).size.width / 24),
-                      child: GestureDetector(
-                        onTap: () {
-                          tapNearbyUser();
-                        },
-                        child: avatarGen(
-                            0xffc4c4c4, screenSizeAva(), "Eric", "21ft"),
-                      ),
-                    ),
-                    // Bottom Row 2
-                    Positioned(
-                      bottom: (MediaQuery.of(context).size.height / 9),
-                      right: (MediaQuery.of(context).size.width / 24),
-                      child: GestureDetector(
-                        onTap: () {
-                          tapNearbyUser();
-                        },
-                        child: avatarGen(
-                            0xffc4c4c4, screenSizeAva(), "Eric", "21ft"),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: (MediaQuery.of(context).size.height / 5.5),
-                      left: (MediaQuery.of(context).size.width / 2) -
-                          screenSizeAva(),
-                      child: GestureDetector(
-                        onTap: () {
-                          tapNearbyUser();
-                        },
-                        child: avatarGen(
-                            0xffc4c4c4, screenSizeAva(), "Eric", "21ft"),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: (MediaQuery.of(context).size.height / 9),
-                      left: (MediaQuery.of(context).size.width / 24),
-                      child: GestureDetector(
-                        onTap: () {
-                          tapNearbyUser();
-                        },
-                        child: avatarGen(
-                            0xffc4c4c4, screenSizeAva(), "Eric", "21ft"),
-                      ),
-                    ),
-
-                    // Own profile
-                    Positioned(
-                      top: (MediaQuery.of(context).size.height / 2) - 70,
-                      child: GestureDetector(
-                        onTap: () {
-                          tapOwnProfile();
-                        },
-                        child: avatarGen(0xff79DFFF, 70, "You", ""),
-                      ),
-                    ),
-                  ],
+                  children: UIpopulate() +
+                      OwnProfilePopulate() +
+                      displayUsers(nearbyUserAttr),
                 ),
               ],
             )
@@ -933,14 +2390,16 @@ Widget conCircles(double rad) => Container(
       ),
     );
 
-Widget avatarGen(int cVal, double rad, String name, String dist) => Column(
+Widget avatarGen(
+        int cVal, double rad, String name, String dist, String imageID) =>
+    Column(
       children: [
         CircleAvatar(
           backgroundColor: Color(cVal),
           radius: rad,
           // ignore: prefer_const_constructors
           child: CircleAvatar(
-            backgroundImage: const AssetImage('images/prof.jpeg'),
+            backgroundImage: NetworkImage(imageID),
             radius: rad - 5,
           ),
         ),

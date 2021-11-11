@@ -1,4 +1,7 @@
 import 'dart:ui';
+import 'package:btiui/services/storage_service.dart';
+import 'package:btiui/services/user_db_info.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
 import 'dart:math';
@@ -43,18 +46,22 @@ class EditProfileFormState extends State<EditProfileForm> {
   //
   // Note: This is a GlobalKey<FormState>,
   // not a GlobalKey<EditProfileFormState>.
-  final _formKey = GlobalKey<FormState>();
+  static final _editformKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
+    final Storage storage = Storage();
+
     // change to other stream
-    final userAttrDB = Provider.of<List<UserAttDB>>(context, listen: false);
     final user = Provider.of<UserAtt?>(context);
-    var fname = userAttrDB[0].fname;
-    var headline = userAttrDB[0].headline;
-    var f1 = userAttrDB[0].f1;
-    var f2 = userAttrDB[0].f2;
-    var f3 = userAttrDB[0].f3;
+    final userAttd2 = Provider.of<UserAttDbInfo?>(context);
+    var uid = user?.uid;
+    var fname = userAttd2?.user?.fname;
+    var headline = userAttd2?.user?.headline;
+    var f1 = userAttd2?.user?.f1;
+    var f2 = userAttd2?.user?.f2;
+    var f3 = userAttd2?.user?.f3;
+    var profileURL = userAttd2?.user?.profileURL;
     final TextEditingController fnameController =
         TextEditingController(text: fname);
     final TextEditingController headlineController =
@@ -62,9 +69,10 @@ class EditProfileFormState extends State<EditProfileForm> {
     final TextEditingController f1Controller = TextEditingController(text: f1);
     final TextEditingController f2Controller = TextEditingController(text: f2);
     final TextEditingController f3Controller = TextEditingController(text: f3);
-    // Build a Form widget using the _formKey created above.
+
+    // Build a Form widget using the _editformKey created above.
     return Form(
-      key: _formKey,
+      key: _editformKey,
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -77,14 +85,20 @@ class EditProfileFormState extends State<EditProfileForm> {
                   children: [
                     ImagePickerWidget(
                       diameter: 130,
-                      initialImage: AssetImage("images/empty_profile2.jpg"),
+                      initialImage: NetworkImage(profileURL!),
                       shape: ImagePickerWidgetShape.circle,
                       isEditable: true,
                       modalTitle: Text("Select Image Source:"),
                       modalCameraText: Text("Camera"),
                       modalGalleryText: Text("Gallery"),
                       onChange: (File file) {
-                        print("I changed the file to: ${file.path}");
+                        final path = file.path;
+                        final fileName = uid;
+                        storage.UploadImage(path, fileName ?? "No ID")
+                            .then((value) {
+                          profileURL = value!;
+                          print(profileURL);
+                        });
                       },
                     ),
                     TextFormField(
@@ -197,7 +211,7 @@ class EditProfileFormState extends State<EditProfileForm> {
                 children: [
                   ElevatedButton.icon(
                     onPressed: () {
-                      if (_formKey.currentState!.validate()) {
+                      if (_editformKey.currentState!.validate()) {
                         // If the form is valid, display a snackbar. In the real world,
                         // you'd often call a server or save the information in a database.
 
@@ -207,6 +221,7 @@ class EditProfileFormState extends State<EditProfileForm> {
                             f1Controller.text,
                             f2Controller.text,
                             f3Controller.text,
+                            profileURL!,
                             false);
 
                         ScaffoldMessenger.of(context).showSnackBar(

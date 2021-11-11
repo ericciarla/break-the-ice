@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:btiui/pages/home.dart';
 import 'package:btiui/pages/login.dart';
 import 'package:btiui/pages/welcome.dart';
+import 'package:btiui/services/storage_service.dart';
 import 'package:btiui/services/wrapper.dart';
 import "package:flutter/material.dart";
 import 'dart:ui';
@@ -13,6 +14,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import '../services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:math';
+
+const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+Random _rnd = Random();
+
+String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
+    length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
 
 // Sign Up
 class SignUp extends StatelessWidget {
@@ -50,11 +58,11 @@ class SignUpFormState extends State<SignUpForm> {
   //
   // Note: This is a GlobalKey<FormState>,
   // not a GlobalKey<SignUpFormState>.
-  static final _formKey = GlobalKey<FormState>();
+  static final _signupformKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    // Build a Form widget using the _formKey created above.
+    // Build a Form widget using the _signupformKey created above.
 
     final TextEditingController emailController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
@@ -65,9 +73,11 @@ class SignUpFormState extends State<SignUpForm> {
     final TextEditingController f3Controller = TextEditingController();
 
     final authService = Provider.of<AuthService>(context);
+    final Storage storage = Storage();
+    var profileURL = " ";
 
     return Form(
-      key: _formKey,
+      key: _signupformKey,
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -117,7 +127,12 @@ class SignUpFormState extends State<SignUpForm> {
                   modalCameraText: Text("Camera"),
                   modalGalleryText: Text("Gallery"),
                   onChange: (File file) {
-                    print("I changed the file to: ${file.path}");
+                    final path = file.path;
+                    final fileName = getRandomString(25);
+                    storage.UploadImage(path, fileName).then((value) {
+                      profileURL = value!;
+                      print(profileURL);
+                    });
                   },
                 ),
                 TextFormField(
@@ -260,7 +275,7 @@ class SignUpFormState extends State<SignUpForm> {
                 children: [
                   ElevatedButton(
                     onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
+                      if (_signupformKey.currentState!.validate()) {
                         await authService.createUserWithEmailAndPassword(
                             emailController.text, passwordController.text);
                         await DatabaseService().updateUserData(
@@ -269,6 +284,7 @@ class SignUpFormState extends State<SignUpForm> {
                             f1Controller.text,
                             f2Controller.text,
                             f3Controller.text,
+                            profileURL,
                             false);
                         Navigator.push(
                           context,
