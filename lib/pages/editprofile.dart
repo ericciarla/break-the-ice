@@ -42,12 +42,12 @@ class EditProfileFormState extends State<EditProfileForm> {
     print("rebuild");
     final userAttd2 = Provider.of<UserAttDbInfo>(context);
     var uid = user?.uid;
-    var fname = userAttd2?.user?.fname;
-    var headline = userAttd2?.user?.headline;
-    var f1 = userAttd2?.user?.f1;
-    var f2 = userAttd2?.user?.f2;
-    var f3 = userAttd2?.user?.f3;
-    var profileURL = userAttd2?.user?.profileURL;
+    var fname = userAttd2.user?.fname;
+    var headline = userAttd2.user?.headline;
+    var f1 = userAttd2.user?.f1;
+    var f2 = userAttd2.user?.f2;
+    var f3 = userAttd2.user?.f3;
+    var profileURL = userAttd2.user?.profileURL;
 
     fnameController.text = fname!;
     headlineController.text = headline!;
