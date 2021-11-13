@@ -46,14 +46,14 @@ class LoginFormState extends State<LoginForm> {
   //
   // Note: This is a GlobalKey<FormState>,
   // not a GlobalKey<LoginFormState>.
-  static final _loginformKey = GlobalKey<FormState>();
+  GlobalKey<FormState> _loginformKey = GlobalKey<FormState>();
+
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _loginformKey created above.
-
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
 
     final authService = Provider.of<AuthService>(context);
 
@@ -145,7 +145,7 @@ class LoginFormState extends State<LoginForm> {
                         final User? user = await AuthService().getCurrentUser();
                         String userId = user?.uid ?? " ";
                         if (userId != " ") {
-                          Navigator.push(
+                          Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(builder: (context) => Wrapper()),
                           );
@@ -168,7 +168,7 @@ class LoginFormState extends State<LoginForm> {
             ),
             GestureDetector(
               onTap: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => SignUp()),
                 );
@@ -198,5 +198,13 @@ class LoginFormState extends State<LoginForm> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    print("trash dumped!");
+    super.dispose();
   }
 }

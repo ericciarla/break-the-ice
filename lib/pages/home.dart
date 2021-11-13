@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:btiui/models/nearby_user_model_db.dart';
+import 'package:btiui/pages/login.dart';
 import 'package:btiui/services/storage_service.dart';
 import 'package:btiui/services/user_db_info.dart';
 
 import 'editprofile.dart';
-import 'home_remote.dart';
-import 'home_remote_prompt.dart';
+
 import 'filters.dart';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
@@ -81,7 +81,6 @@ class _HomeState extends State<Home> {
               Navigator.pop(context);
               final authService =
                   Provider.of<AuthService>(context, listen: false);
-
               await authService.signOut();
             },
           )
@@ -612,7 +611,8 @@ class _HomeState extends State<Home> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => EditProfile()),
+                                      builder: (context) =>
+                                          const EditProfileForm()),
                                 );
                               },
                               icon: Icon(
@@ -661,28 +661,18 @@ class _HomeState extends State<Home> {
     //DatabaseService().updateLocation();
     //const waitTime = Duration(seconds: 60);
     //Timer.periodic(waitTime, (Timer t) => DatabaseService().updateLocation());
+    //print(widget.data);
   }
 
   @override
   Widget build(BuildContext context) {
-    // Streams
-    final user = Provider.of<UserAtt?>(context);
     final userAttd2 = Provider.of<UserAttDbInfo?>(context, listen: false);
-    final nearbyUserAttr = Provider.of<List<NearUserAttDB>>(context);
-
-    //nearbyUserAttr.removeLast();
-    //print(nearbyUserAttr.length);
-    if (nearbyUserAttr.length > 1) {
-      nearbyUserAttr.sort(
-          (a, b) => int.parse(a.distance!).compareTo(int.parse(b.distance!)));
-      //nearbyUserAttr.reversed;
-    }
 
     List<Widget> displayUsers(List<NearUserAttDB> users) {
       if (userAttd2?.user?.hidden == true) {
         return <Widget>[
           Positioned(
-            top: (MediaQuery.of(context).size.height / 1.5),
+            top: (MediaQuery.of(context).size.height / 1.4),
             left: (MediaQuery.of(context).size.width / 2) - 100,
             child: RichText(
               text: const TextSpan(children: <TextSpan>[
@@ -2198,6 +2188,41 @@ class _HomeState extends State<Home> {
       return <Widget>[];
     }
 
+    // Streambuilder - working
+    List<Widget> UserStreamTest() {
+      return <Widget>[
+        StreamBuilder<List<NearUserAttDB>>(
+            stream: DatabaseService()
+                .allNearbyUsersAttr(DatabaseService().nearbyUsers),
+            builder: (_, AsyncSnapshot<List<NearUserAttDB>> snapshot5) {
+              if (snapshot5.connectionState == ConnectionState.active) {
+                var nUserAttr = snapshot5.data;
+                print("Length:");
+                print(nUserAttr!.length);
+
+                return SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Stack(
+                        children: List<Widget>.generate(nUserAttr.length,
+                            (i) => displayUsers(nUserAttr)[i])));
+              }
+
+              return Text("");
+            })
+      ];
+    }
+
+    //final nearbyUserAttr = widget.data;
+
+    //nearbyUserAttr.removeLast();
+    //print(nearbyUserAttr.length);
+    //if (nearbyUserAttr.length > 1) {
+    //  nearbyUserAttr.sort(
+    //      (a, b) => int.parse(a.distance!).compareTo(int.parse(b.distance!)));
+    //  //nearbyUserAttr.reversed;
+    //}
+
     // Populate the UI
     List<Widget> UIpopulate() {
       return <Widget>[
@@ -2331,47 +2356,22 @@ class _HomeState extends State<Home> {
       ];
     }
 
-    // Streambuilder - not working
-    List<Widget> UserStreamTest() {
-      return <Widget>[
-        StreamBuilder<List<NearUserAttDB>>(
-            stream: DatabaseService()
-                .allNearbyUsersAttr(DatabaseService().nearbyUsers),
-            builder: (_, AsyncSnapshot<List<NearUserAttDB>> snapshot3) {
-              if (snapshot3.connectionState == ConnectionState.active) {
-                var nUserAttr = snapshot3.data;
-                displayUsers(nUserAttr!);
-              }
-
-              return Text("");
-            })
-      ];
-    }
-
+    print("build");
     return MaterialApp(
       title: 'Break The Ice',
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xfff2fcff),
       ),
       home: Scaffold(
-        body: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Stack(
-                  alignment: AlignmentDirectional.center,
-                  children: UIpopulate() +
-                      OwnProfilePopulate() +
-                      displayUsers(nearbyUserAttr),
-                ),
-              ],
-            )
-          ],
-        ),
-      ),
+          body: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: Stack(
+            alignment: AlignmentDirectional.center,
+            children: UIpopulate() + OwnProfilePopulate() + UserStreamTest()
+            //displayUsers(nearbyUserAttr),
+            ),
+      )),
     );
   }
 }

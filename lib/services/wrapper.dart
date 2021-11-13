@@ -1,3 +1,5 @@
+import 'package:btiui/models/location_model.dart';
+import 'package:btiui/models/nearby_user_model_db.dart';
 import 'package:btiui/models/user_model.dart';
 import 'package:btiui/models/user_model_db.dart';
 import 'package:btiui/pages/home.dart';
@@ -33,7 +35,19 @@ class Wrapper extends StatelessWidget {
                     if (snapshot2.connectionState == ConnectionState.active &&
                         snapshot2.hasData) {
                       dbService2.setUser(snapshot2.data!);
-                      return Home();
+                      return StreamBuilder<List<NearUserAttDB>>(
+                          stream: dbService
+                              .allNearbyUsersAttr(dbService.nearbyUsers),
+                          builder: (context, snapshot3) {
+                            if (snapshot3.connectionState ==
+                                    ConnectionState.active &&
+                                snapshot3.hasData) {
+                              //print(snapshot3.data);
+
+                              return Home();
+                            }
+                            return Loading();
+                          });
                     }
                     return Loading();
                   });

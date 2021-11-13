@@ -7,6 +7,7 @@ import 'package:btiui/services/wrapper.dart';
 import "package:flutter/material.dart";
 import 'dart:ui';
 import "package:flutter/material.dart";
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker_widget/image_picker_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:btiui/services/auth_service.dart';
@@ -58,23 +59,24 @@ class SignUpFormState extends State<SignUpForm> {
   //
   // Note: This is a GlobalKey<FormState>,
   // not a GlobalKey<SignUpFormState>.
-  static final _signupformKey = GlobalKey<FormState>();
+  GlobalKey<FormState> _signupformKey = GlobalKey<FormState>();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController fnameController = TextEditingController();
+  final TextEditingController headlineController = TextEditingController();
+  final TextEditingController f1Controller = TextEditingController();
+  final TextEditingController f2Controller = TextEditingController();
+  final TextEditingController f3Controller = TextEditingController();
+  var profileURL = " ";
+  final Storage storage = Storage();
+  var path = "no file";
+  var fileName = getRandomString(25);
 
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _signupformKey created above.
 
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
-    final TextEditingController fnameController = TextEditingController();
-    final TextEditingController headlineController = TextEditingController();
-    final TextEditingController f1Controller = TextEditingController();
-    final TextEditingController f2Controller = TextEditingController();
-    final TextEditingController f3Controller = TextEditingController();
-
     final authService = Provider.of<AuthService>(context);
-    final Storage storage = Storage();
-    var profileURL = " ";
 
     return Form(
       key: _signupformKey,
@@ -127,12 +129,7 @@ class SignUpFormState extends State<SignUpForm> {
                   modalCameraText: Text("Camera"),
                   modalGalleryText: Text("Gallery"),
                   onChange: (File file) {
-                    final path = file.path;
-                    final fileName = getRandomString(25);
-                    storage.UploadImage(path, fileName).then((value) {
-                      profileURL = value!;
-                      print(profileURL);
-                    });
+                    path = file.path;
                   },
                 ),
                 TextFormField(
@@ -276,23 +273,43 @@ class SignUpFormState extends State<SignUpForm> {
                   ElevatedButton(
                     onPressed: () async {
                       if (_signupformKey.currentState!.validate()) {
-                        await authService.createUserWithEmailAndPassword(
-                            emailController.text, passwordController.text);
-                        await DatabaseService().updateUserData(
-                            fnameController.text,
-                            headlineController.text,
-                            f1Controller.text,
-                            f2Controller.text,
-                            f3Controller.text,
-                            profileURL,
-                            false);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Wrapper()),
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Processing Data')),
-                        );
+                        Fluttertoast.showToast(
+                            msg: "Processing Data",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.CENTER,
+                            backgroundColor: Colors.white,
+                            textColor: Colors.black,
+                            fontSize: 16.0);
+                        if (path != "no file") {
+                          await storage.UploadImage(path, fileName)
+                              .then((value) {
+                            profileURL = value!;
+                            print(profileURL);
+                          });
+                          await authService.createUserWithEmailAndPassword(
+                              emailController.text, passwordController.text);
+                          await DatabaseService().updateUserData(
+                              fnameController.text,
+                              headlineController.text,
+                              f1Controller.text,
+                              f2Controller.text,
+                              f3Controller.text,
+                              profileURL,
+                              false);
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Wrapper()),
+                          );
+                        } else {
+                          Fluttertoast.showToast(
+                              msg: "Please upload an image!",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.CENTER,
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                              fontSize: 16.0);
+                        }
                       }
                     },
                     child: const Text('Sign Up'),
@@ -342,5 +359,15 @@ class SignUpFormState extends State<SignUpForm> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    fnameController.dispose();
+    headlineController.dispose();
+    f1Controller.dispose();
+    f2Controller.dispose();
+    f3Controller.dispose();
+    super.dispose();
   }
 }

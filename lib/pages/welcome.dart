@@ -60,7 +60,7 @@ class _WelcomeState extends State<Welcome> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => Login()),
                       );
@@ -88,7 +88,7 @@ class _WelcomeState extends State<Welcome> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => SignUp()),
                       );
