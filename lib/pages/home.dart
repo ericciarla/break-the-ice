@@ -27,7 +27,10 @@ import 'package:btiui/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+  final List<NearUserAttDB> nUserAttr;
+  const Home({
+    required this.nUserAttr,
+    Key? key}) : super(key: key);
 
   @override
   _HomeState createState() => _HomeState();
@@ -2191,25 +2194,47 @@ class _HomeState extends State<Home> {
     // Streambuilder - working
     List<Widget> UserStreamTest() {
       return <Widget>[
-        StreamBuilder<List<NearUserAttDB>>(
-            stream: DatabaseService()
-                .allNearbyUsersAttr(DatabaseService().nearbyUsers),
-            builder: (_, AsyncSnapshot<List<NearUserAttDB>> snapshot5) {
-              if (snapshot5.connectionState == ConnectionState.active) {
-                var nUserAttr = snapshot5.data;
-                print("Length:");
-                print(nUserAttr!.length);
+        StreamBuilder<List<UserLoc>>(
+            stream: DatabaseService().nearbyUsers,
+            builder: (_, AsyncSnapshot<List<UserLoc>> snapshot1) {
+              if (snapshot1.connectionState == ConnectionState.active && snapshot1.hasData){
+                return FutureBuilder<List<NearUserAttDB>>(
+                    future:
+                        DatabaseService().allNearbyUsersAttr(snapshot1.data!),
+                    builder: (_, AsyncSnapshot<List<NearUserAttDB>> snapshot5) {
+                      if (snapshot5.connectionState == ConnectionState.done) {
+                        var nUserAttr = snapshot5.data;
+                        print("Length:");
+                        print(nUserAttr!.length);
 
-                return SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Stack(
-                        children: List<Widget>.generate(nUserAttr.length,
-                            (i) => displayUsers(nUserAttr)[i])));
+                        return SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.height,
+                            child: Stack(
+                                children: List<Widget>.generate(
+                                    nUserAttr.length,
+                                    (i) => displayUsers(nUserAttr)[i])));
+                      }
+
+                      return Text("");
+                    });
               }
 
               return Text("");
             })
+      ];
+    }
+
+    List<Widget> PopulateUsers() {
+      return <Widget>[
+        SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.height,
+                            child: Stack(
+                                children: List<Widget>.generate(
+                                    widget.nUserAttr.length,
+                                    (i) => displayUsers(widget.nUserAttr)[i])))
+                    
       ];
     }
 
@@ -2357,21 +2382,17 @@ class _HomeState extends State<Home> {
     }
 
     print("build");
-    return MaterialApp(
-      title: 'Break The Ice',
-      theme: ThemeData(
-        scaffoldBackgroundColor: const Color(0xfff2fcff),
-      ),
-      home: Scaffold(
+    return Scaffold(
+        backgroundColor: const Color(0xfff2fcff),
           body: SizedBox(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         child: Stack(
             alignment: AlignmentDirectional.center,
-            children: UIpopulate() + OwnProfilePopulate() + UserStreamTest()
+            children: UIpopulate() + OwnProfilePopulate() + PopulateUsers()
             //displayUsers(nearbyUserAttr),
             ),
-      )),
+      ),
     );
   }
 }

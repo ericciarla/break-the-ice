@@ -132,14 +132,21 @@ class DatabaseService {
     bool serviceEnabled;
     LocationPermission permission;
 
-    // Test if location services are enabled.
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      // Location services are not enabled don't continue
-      // accessing the position and request users of the
-      // App to enable the location services.
-      return Future.error('Location services are disabled.');
-    }
+    // // Test if location services are enabled.
+    // try {
+    // serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    // if (!serviceEnabled) {
+    //   // Location services are not enabled don't continue
+    //   // accessing the position and request users of the
+    //   // App to enable the location services.
+    //   return Future.error('Location services are disabled.');
+    // }
+      
+    // } catch (e) {
+    //   print(e);
+    // }
+
+    
 
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
@@ -162,7 +169,9 @@ class DatabaseService {
 
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
-    return await Geolocator.getCurrentPosition();
+   var c =  await Geolocator.getCurrentPosition();
+   print(c);
+    return c;
   }
 
   // Query nearby users - working
@@ -175,8 +184,9 @@ class DatabaseService {
     //GeoFirePoint point = geo.point(latitude: 43.139273, longitude: -70.953941);
 
     // 500 ft radius in km
-    double radius = 0.1524;
+    double radius = 200;//0.1524;
     String field = 'position';
+    print(pos);
 
     var stream = geo
         .collection(collectionRef: locationCollection)
@@ -197,8 +207,8 @@ class DatabaseService {
   }
 
   // Stream list of nearby users - working
-  Stream<List<NearUserAttDB>> allNearbyUsersAttr(
-      Stream<List<UserLoc>> usersIDStream) async* {
+  Future<List<NearUserAttDB>> allNearbyUsersAttr(
+      List<UserLoc> usersIDStream) async {
     List<NearUserAttDB> attrList = [];
     final User? user = await AuthService().getCurrentUser();
     String userId = user?.uid ?? " ";
@@ -206,9 +216,8 @@ class DatabaseService {
     DateTime nowminus30 = DateTime.now().subtract(const Duration(minutes: 900));
     var pos = await _determinePosition();
 
-    await for (List<UserLoc> users in usersIDStream) {
-      //print(users.length);
-      users.forEach((element) async {
+      print(usersIDStream.length);
+      usersIDStream.forEach((element) async {
         DateTime ago = element.time!.toDate();
         if (element.uid != userId && ago.isAfter(nowminus30)) {
           final Stream<UserAttDB> userAttrStream = userAttrCollection
@@ -247,7 +256,6 @@ class DatabaseService {
           }
         }
       });
-      yield attrList;
-    }
+      return attrList;
   }
 }

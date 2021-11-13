@@ -1,24 +1,16 @@
 import 'package:btiui/models/location_model.dart';
-import 'package:btiui/pages/editprofile.dart';
 import 'package:btiui/services/auth_service.dart';
 import 'package:btiui/services/user_db_info.dart';
 import 'package:btiui/services/wrapper.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'auth_widget.dart';
+import 'auth_widget_builder.dart';
 import 'models/nearby_user_model_db.dart';
 import 'models/user_model_db.dart';
-import 'pages/home.dart';
-import 'pages/signup.dart';
-import 'pages/login.dart';
-import 'pages/welcome.dart';
-import 'pages/somethingwentwrong.dart';
-import 'pages/loading.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'models/user_model.dart';
 import 'services/database.dart';
-import 'package:location/location.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,34 +41,19 @@ class _MyAppState extends State<MyApp> {
         Provider<DatabaseService>(
           create: (_) => DatabaseService(),
         ),
-        // Streams
-        StreamProvider<UserAtt?>(
-          initialData: null,
-          create: (_) => AuthService().user,
-        ),
-        StreamProvider<UserAttDB?>(
-          initialData: null,
-          create: (_) => DatabaseService().UserAttDBs3,
-        ),
-        ChangeNotifierProvider<UserAttDbInfo?>(
-          create: (_) => UserAttDbInfo(),
-        ),
-        StreamProvider<List<UserLoc>>(
-          initialData: const <UserLoc>[],
-          create: (_) => DatabaseService().nearbyUsers,
-        ),
-        StreamProvider<List<NearUserAttDB>>(
-          initialData: const <NearUserAttDB>[],
-          create: (_) => DatabaseService()
-              .allNearbyUsersAttr(DatabaseService().nearbyUsers),
-        ),
       ],
       child: MaterialApp(
         title: 'Break The Ice',
         theme: ThemeData(
-          primaryColor: Color(0xff79DFFF),
+          primaryColor: const Color(0xff79DFFF),
         ),
-        home: Wrapper(),
+        home:AuthWidgetBuilder(
+          builder: (context, userSnapshot) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: AuthWidget(userSnapshot: userSnapshot),
+        );
+      }),
       ),
     );
   }

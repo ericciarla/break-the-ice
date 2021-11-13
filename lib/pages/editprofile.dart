@@ -1,17 +1,13 @@
 import 'dart:ui';
 import 'package:btiui/services/storage_service.dart';
 import 'package:btiui/services/user_db_info.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
 import 'package:fluttertoast/fluttertoast.dart';
-import 'dart:math';
 import 'package:image_picker_widget/image_picker_widget.dart';
 import 'dart:io';
-import 'package:btiui/models/user_model_db.dart';
 import 'package:btiui/models/user_model.dart';
 import '../services/database.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 
 // Create a Form widget.
@@ -68,11 +64,9 @@ class EditProfileFormState extends State<EditProfileForm> {
       ),
       body: Form(
         key: _editformKey,
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+        child: ListView(
+          shrinkWrap: true,
+          children: [
               SizedBox(height: 20),
               Padding(
                   padding: EdgeInsets.symmetric(horizontal: 30.0),
@@ -258,7 +252,6 @@ class EditProfileFormState extends State<EditProfileForm> {
             ],
           ),
         ),
-      ),
     );
   }
 

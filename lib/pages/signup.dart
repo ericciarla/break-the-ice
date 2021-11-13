@@ -297,10 +297,10 @@ class SignUpFormState extends State<SignUpForm> {
                               profileURL,
                               false);
 
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => Wrapper()),
-                          );
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(builder: (context) => Wrapper()),
+                          // );
                         } else {
                           Fluttertoast.showToast(
                               msg: "Please upload an image!",

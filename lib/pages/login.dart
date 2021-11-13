@@ -142,14 +142,14 @@ class LoginFormState extends State<LoginForm> {
                       if (_loginformKey.currentState!.validate()) {
                         await authService.signInWithEmailAndPassword(
                             emailController.text, passwordController.text);
-                        final User? user = await AuthService().getCurrentUser();
-                        String userId = user?.uid ?? " ";
-                        if (userId != " ") {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => Wrapper()),
-                          );
-                        }
+                        // final User? user = await AuthService().getCurrentUser();
+                        // String userId = user?.uid ?? " ";
+                        // if (userId != " ") {
+                        //   Navigator.pushReplacement(
+                        //     context,
+                        //     MaterialPageRoute(builder: (context) => Wrapper()),
+                        //   );
+                        // }
                       }
                     },
                     child: const Text('Log In'),
