@@ -169,10 +169,10 @@ class DatabaseService {
   Stream<List<UserLoc>> get nearbyUsers async* {
     // Problematic line below
     //var pos = await location.getLocation();
-    //var pos = await _determinePosition();
-    //GeoFirePoint point =
-    //geo.point(latitude: pos.latitude, longitude: pos.longitude);
-    GeoFirePoint point = geo.point(latitude: 43.139273, longitude: -70.953941);
+    var pos = await _determinePosition();
+    GeoFirePoint point =
+        geo.point(latitude: pos.latitude, longitude: pos.longitude);
+    //GeoFirePoint point = geo.point(latitude: 43.139273, longitude: -70.953941);
 
     // 500 ft radius in km
     double radius = 0.1524;
