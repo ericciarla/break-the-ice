@@ -35,9 +35,7 @@ class AuthWidgetBuilder extends StatelessWidget {
               initialData: null,
               create: (_) => DatabaseService().UserAttDBs3,
             ),
-            ChangeNotifierProvider<UserAttDbInfo?>(
-              create: (_) => UserAttDbInfo(),
-            ),
+            
             StreamProvider<List<UserLoc>>(
               initialData: const <UserLoc>[],
               create: (_) => DatabaseService().nearbyUsers,

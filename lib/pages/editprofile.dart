@@ -40,7 +40,7 @@ class EditProfileFormState extends State<EditProfileForm> {
     // change to other stream
     final user = Provider.of<UserAtt?>(context);
     print("rebuild");
-    final userAttd2 = Provider.of<UserAttDbInfo?>(context);
+    final userAttd2 = Provider.of<UserAttDbInfo>(context);
     var uid = user?.uid;
     var fname = userAttd2?.user?.fname;
     var headline = userAttd2?.user?.headline;

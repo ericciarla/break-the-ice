@@ -41,6 +41,9 @@ class _MyAppState extends State<MyApp> {
         Provider<DatabaseService>(
           create: (_) => DatabaseService(),
         ),
+        ChangeNotifierProvider<UserAttDbInfo?>(
+              create: (_) => UserAttDbInfo(),
+            ),
       ],
       child: MaterialApp(
         title: 'Break The Ice',
