@@ -32,6 +32,7 @@ class Wrapper extends StatelessWidget {
                 builder: (context, snapshot3) {
                   if (snapshot3.connectionState == ConnectionState.active &&
                       snapshot3.hasData) {
+                        print("s3");
                     print(snapshot3.data);
                     return FutureBuilder<List<NearUserAttDB>>(
                         future: dbService.allNearbyUsersAttr(snapshot3.data!),
@@ -39,6 +40,7 @@ class Wrapper extends StatelessWidget {
                           if (snapshot5.connectionState ==
                                   ConnectionState.done &&
                               snapshot5.hasData) {
+                                 print("s4");
                                 print(snapshot5.data);
                             return Home(nUserAttr:snapshot5.data!);
                           }

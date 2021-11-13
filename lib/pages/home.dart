@@ -2193,14 +2193,15 @@ class _HomeState extends State<Home> {
 
     // Streambuilder - working
     List<Widget> UserStreamTest() {
+
+      final dbService = Provider.of<DatabaseService>(context);
       return <Widget>[
         StreamBuilder<List<UserLoc>>(
-            stream: DatabaseService().nearbyUsers,
+            stream: dbService.nearbyUsers,
             builder: (_, AsyncSnapshot<List<UserLoc>> snapshot1) {
               if (snapshot1.connectionState == ConnectionState.active && snapshot1.hasData){
                 return FutureBuilder<List<NearUserAttDB>>(
-                    future:
-                        DatabaseService().allNearbyUsersAttr(snapshot1.data!),
+                    future:dbService.allNearbyUsersAttr(snapshot1.data!),
                     builder: (_, AsyncSnapshot<List<NearUserAttDB>> snapshot5) {
                       if (snapshot5.connectionState == ConnectionState.done) {
                         var nUserAttr = snapshot5.data;
@@ -2389,7 +2390,7 @@ class _HomeState extends State<Home> {
         height: MediaQuery.of(context).size.height,
         child: Stack(
             alignment: AlignmentDirectional.center,
-            children: UIpopulate() + OwnProfilePopulate() + PopulateUsers()
+            children: UIpopulate() + OwnProfilePopulate() + UserStreamTest()
             //displayUsers(nearbyUserAttr),
             ),
       ),

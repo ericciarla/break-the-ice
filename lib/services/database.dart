@@ -4,6 +4,7 @@ import 'package:btiui/models/nearby_user_model_db.dart';
 import 'package:btiui/services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 import '../models/user_model_db.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:location/location.dart';
@@ -220,6 +221,7 @@ class DatabaseService {
       usersIDStream.forEach((element) async {
         DateTime ago = element.time!.toDate();
         if (element.uid != userId && ago.isAfter(nowminus30)) {
+          print(element.uid);
           final Stream<UserAttDB> userAttrStream = userAttrCollection
               .doc(element.uid)
               .snapshots()
