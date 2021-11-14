@@ -2245,64 +2245,6 @@ class _HomeState extends State<Home> {
       ];
     }
 
-    // Streambuilder - working
-    //List<Widget> UserStreamTest() {
-    //  final dbService = Provider.of<DatabaseService>(context);
-    //  return <Widget>[
-    //    StreamBuilder<List<UserLoc>>(
-    //        stream: dbService.nearbyUsers,
-    //        builder: (_, AsyncSnapshot<List<UserLoc>> snapshot1) {
-    //          if (snapshot1.connectionState == ConnectionState.active &&
-    //              snapshot1.hasData) {
-    //            return FutureBuilder<List<NearUserAttDB>>(
-    //                future: dbService.allNearbyUsersAttr(snapshot1.data!),
-    //                builder: (_, AsyncSnapshot<List<NearUserAttDB>> snapshot5) {
-    //                  if (snapshot5.connectionState == ConnectionState.done) {
-    //                    var nUserAttr = snapshot5.data;
-    //                    print("Length:");
-    //                    print(nUserAttr!.length);
-//
-    //                    return SizedBox(
-    //                        width: MediaQuery.of(context).size.width,
-    //                        height: MediaQuery.of(context).size.height,
-    //                        child: Stack(
-    //                            children: List<Widget>.generate(
-    //                                nUserAttr.length,
-    //                                (i) => displayUsers(nUserAttr)[i])));
-    //                  }
-//
-    //                  return Text("");
-    //                });
-    //          }
-//
-    //          return Text("");
-    //        })
-    //  ];
-    //}
-
-    //List<Widget> PopulateUsers() {
-    //  return <Widget>[
-    //    SizedBox(
-    //                        width: MediaQuery.of(context).size.width,
-    //                        height: MediaQuery.of(context).size.height,
-    //                        child: Stack(
-    //                            children: List<Widget>.generate(
-    //                                widget.nUserAttr.length,
-    //                                (i) => displayUsers(widget.nUserAttr)[i])))
-    //
-    //  ];
-    //}
-
-    //final nearbyUserAttr = widget.data;
-
-    //nearbyUserAttr.removeLast();
-    //print(nearbyUserAttr.length);
-    //if (nearbyUserAttr.length > 1) {
-    //  nearbyUserAttr.sort(
-    //      (a, b) => int.parse(a.distance!).compareTo(int.parse(b.distance!)));
-    //  //nearbyUserAttr.reversed;
-    //}
-
     // Populate the UI
     List<Widget> UIpopulate() {
       return <Widget>[
@@ -2310,7 +2252,6 @@ class _HomeState extends State<Home> {
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
         ),
-
         Positioned(
           top: (MediaQuery.of(context).size.height / 2) - 175,
           child: conCircles(350),
@@ -2346,46 +2287,6 @@ class _HomeState extends State<Home> {
             ]),
           ),
         ),
-        //Positioned(
-        //  bottom: 25,
-        //  left: 22,
-        //  child: GestureDetector(
-        //    onTap: () {
-        //      tapActivity();
-        //    },
-        //    child: Transform.rotate(
-        //      angle: 0.52, //set the angel
-        //      child: Icon(
-        //        //Icons.pan_tool_outlined,
-        //        Icons.pan_tool,
-        //        size: 40.0,
-        //        //color: Color(0xffc4c4c4),
-        //        color: Color(0xff79DFFF),
-        //      ),
-        //    ),
-        //  ),
-        //),
-        //Positioned(
-        //  bottom: 50,
-        //  left: 64,
-        //  child: GestureDetector(
-        //    onTap: () {
-        //      tapActivity();
-        //    },
-        //    child: RichText(
-        //      text: const TextSpan(children: <TextSpan>[
-        //        TextSpan(
-        //          text: '2',
-        //          style: TextStyle(
-        //            fontWeight: FontWeight.w700,
-        //            color: Color(0xff79DFFF),
-        //            fontSize: 20,
-        //          ),
-        //        ),
-        //      ]),
-        //    ),
-        //  ),
-        //),
         Positioned(
           bottom: 32,
           right: 25,
@@ -2436,7 +2337,6 @@ class _HomeState extends State<Home> {
       ];
     }
 
-    print("build");
     return Scaffold(
       backgroundColor: const Color(0xfff2fcff),
       body: SizedBox(

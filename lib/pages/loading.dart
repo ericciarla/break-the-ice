@@ -30,15 +30,7 @@ class _LoadingState extends State<Loading> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    'Loading...',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xff5a5a5a),
-                      fontSize: 26,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
+                  CircularProgressIndicator(),
                 ],
               ),
             ),

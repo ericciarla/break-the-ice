@@ -36,18 +36,6 @@ class Wrapper extends StatelessWidget {
                     print(snapshot3.data);
                     return Home(
                         nUserAttr: snapshot3.data!, UserData: snapshot2.data!);
-                    //return FutureBuilder<List<NearUserAttDB>>(
-                    //   future: dbService.allNearbyUsersAttr(snapshot3.data!),
-                    //   builder: (context, snapshot5) {
-                    //     if (snapshot5.connectionState ==
-                    //             ConnectionState.done &&
-                    //         snapshot5.hasData) {
-                    //            print("s4");
-                    //           print(snapshot5.data);
-                    //       return Home(nUserAttr:snapshot5.data!);
-                    //     }
-                    //     return Loading();
-                    //   });
                   }
                   return Loading();
                 });
