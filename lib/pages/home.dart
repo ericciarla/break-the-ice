@@ -723,6 +723,27 @@ class _HomeState extends State<Home> {
           ),
         ];
       }
+      if (users.length == 0) {
+        return <Widget>[
+          Positioned(
+            top: (MediaQuery.of(context).size.height / 1.4),
+            left: (MediaQuery.of(context).size.width / 2) - 100,
+            child: RichText(
+              text: const TextSpan(children: <TextSpan>[
+                TextSpan(
+                  text:
+                      'There are no users around. \nMove to a more dense area!',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xff79DFFF),
+                    fontSize: 18,
+                  ),
+                ),
+              ]),
+            ),
+          ),
+        ];
+      }
       if (users.length == 1) {
         return <Widget>[
           Positioned(
