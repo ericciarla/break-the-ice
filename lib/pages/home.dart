@@ -727,7 +727,7 @@ class _HomeState extends State<Home> {
         return <Widget>[
           Positioned(
             top: (MediaQuery.of(context).size.height / 1.4),
-            left: (MediaQuery.of(context).size.width / 2) - 100,
+            left: (MediaQuery.of(context).size.width / 2) - 120,
             child: RichText(
               text: const TextSpan(children: <TextSpan>[
                 TextSpan(
