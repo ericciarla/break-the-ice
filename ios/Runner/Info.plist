@@ -11,7 +11,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>btiui</string>
+	<string>Break The Ice</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -24,6 +24,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>In order to have a profile picture we need access to camera</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>In order to use this app, location needs to be enabled</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>In order to have a profile picture we need access to camera</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -47,7 +49,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>In order to use this app, location needs to be enabled</string>
 </dict>
 </plist>

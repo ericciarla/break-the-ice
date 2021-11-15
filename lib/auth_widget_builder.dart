@@ -35,14 +35,9 @@ class AuthWidgetBuilder extends StatelessWidget {
               initialData: null,
               create: (_) => DatabaseService().UserAttDBs3,
             ),
-            
             StreamProvider<List<UserLoc>>(
               initialData: const <UserLoc>[],
               create: (_) => DatabaseService().nearbyUsers,
-            ),
-            FutureProvider<List<NearUserAttDB>>(
-              initialData: const <NearUserAttDB>[],
-              create: (_) => DatabaseService().allNearbyUsersAttr([]),
             ),
           ], child: builder(context, snapshot));
         }

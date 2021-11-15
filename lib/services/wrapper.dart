@@ -32,8 +32,6 @@ class Wrapper extends StatelessWidget {
                 builder: (context, snapshot3) {
                   if (snapshot3.connectionState == ConnectionState.active &&
                       snapshot3.hasData) {
-                    print("s3");
-                    print(snapshot3.data);
                     return Home(
                         nUserAttr: snapshot3.data!, UserData: snapshot2.data!);
                   }

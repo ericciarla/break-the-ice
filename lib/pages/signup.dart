@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:btiui/pages/home.dart';
+import 'package:btiui/pages/loading.dart';
 import 'package:btiui/pages/login.dart';
 import 'package:btiui/pages/welcome.dart';
 import 'package:btiui/services/storage_service.dart';
@@ -275,7 +276,7 @@ class SignUpFormState extends State<SignUpForm> {
                       if (_signupformKey.currentState!.validate()) {
                         Fluttertoast.showToast(
                             msg: "Processing Data",
-                            toastLength: Toast.LENGTH_SHORT,
+                            toastLength: Toast.LENGTH_LONG,
                             gravity: ToastGravity.CENTER,
                             backgroundColor: Colors.white,
                             textColor: Colors.black,
@@ -286,6 +287,11 @@ class SignUpFormState extends State<SignUpForm> {
                             profileURL = value!;
                             print(profileURL);
                           });
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Loading()),
+                          );
                           await authService.createUserWithEmailAndPassword(
                               emailController.text, passwordController.text);
                           await DatabaseService().updateUserData(
@@ -296,15 +302,10 @@ class SignUpFormState extends State<SignUpForm> {
                               f3Controller.text,
                               profileURL,
                               false);
-
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(builder: (context) => Wrapper()),
-                          // );
                         } else {
                           Fluttertoast.showToast(
                               msg: "Please upload an image!",
-                              toastLength: Toast.LENGTH_SHORT,
+                              toastLength: Toast.LENGTH_LONG,
                               gravity: ToastGravity.CENTER,
                               backgroundColor: Colors.red,
                               textColor: Colors.white,

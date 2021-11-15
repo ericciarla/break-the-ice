@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:btiui/models/nearby_user_model_db.dart';
+import 'package:btiui/pages/loading.dart';
 import 'package:btiui/pages/login.dart';
 import 'package:btiui/services/storage_service.dart';
 import 'package:btiui/services/user_db_info.dart';
@@ -277,7 +278,10 @@ class _HomeState extends State<Home> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    height: (MediaQuery.of(context).size.width) - 70,
+                    //height: (MediaQuery.of(context).size.width) - 70,
+                    constraints: BoxConstraints(
+                      maxHeight: (MediaQuery.of(context).size.width) - 70,
+                    ),
                     child: Stack(
                       children: [
                         Positioned(
@@ -288,9 +292,9 @@ class _HomeState extends State<Home> {
                             child: Image(
                               // make sure all images going in are square
                               image: NetworkImage(imageID),
-                              height: (MediaQuery.of(context).size.width) - 70,
+                              //height: (MediaQuery.of(context).size.width) - 70,
                               width: (MediaQuery.of(context).size.width) - 70,
-                              fit: BoxFit.fill,
+                              fit: BoxFit.fitWidth,
                             ),
                           ),
                         ),
@@ -472,7 +476,7 @@ class _HomeState extends State<Home> {
   }
 
   void tapOwnProfile(String fname, String headline, String f1, String f2,
-      String f3, String imageID) {
+      String f3, String imageID, String Uuid) {
     showDialog(
       context: context,
       builder: (context) {
@@ -489,7 +493,10 @@ class _HomeState extends State<Home> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
-                    height: (MediaQuery.of(context).size.width) - 70,
+                    //height: (MediaQuery.of(context).size.width) - 70,
+                    constraints: BoxConstraints(
+                      maxHeight: (MediaQuery.of(context).size.width) - 70,
+                    ),
                     child: Stack(
                       children: [
                         Positioned(
@@ -500,9 +507,9 @@ class _HomeState extends State<Home> {
                             child: Image(
                               // make sure all images going in are square
                               image: NetworkImage(imageID),
-                              height: (MediaQuery.of(context).size.width) - 70,
+                              //height: (MediaQuery.of(context).size.width) - 70,
                               width: (MediaQuery.of(context).size.width) - 70,
-                              fit: BoxFit.fill,
+                              fit: BoxFit.fitWidth,
                             ),
                           ),
                         ),
@@ -616,7 +623,8 @@ class _HomeState extends State<Home> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          const EditProfileForm()),
+                                          EditProfileForm(uid: Uuid)),
+                                  // Might need to add const
                                 );
                               },
                               icon: Icon(
@@ -658,10 +666,13 @@ class _HomeState extends State<Home> {
     }
   }
 
+  late Stream<List<UserLoc>> firebaseData;
   @override
   void initState() {
     super.initState();
+    firebaseData = DatabaseService().nearbyUsers.distinct();
     // Update location
+    print("init");
     DatabaseService().updateLocation(
         widget.UserData.fname ?? "",
         widget.UserData.headline ?? "",
@@ -669,15 +680,27 @@ class _HomeState extends State<Home> {
         widget.UserData.f2 ?? "",
         widget.UserData.f3 ?? "",
         widget.UserData.profileURL ?? "",
-        widget.UserData.hidden ?? false);
-    //const waitTime = Duration(seconds: 60);
-    //Timer.periodic(waitTime, (Timer t) => DatabaseService().updateLocation());
+        widget.UserData.hidden ?? false,
+        true);
   }
 
   @override
   Widget build(BuildContext context) {
     final userAttd2 = Provider.of<UserAttDbInfo?>(context, listen: false);
     final userAttd3 = Provider.of<UserAtt?>(context, listen: false);
+
+    const waitTime = Duration(seconds: 120);
+    Timer.periodic(
+        waitTime,
+        (Timer t) => DatabaseService().updateLocation(
+            userAttd2?.user?.fname ?? "No name",
+            userAttd2?.user?.headline ?? "",
+            userAttd2?.user?.f1 ?? "",
+            userAttd2?.user?.f2 ?? "",
+            userAttd2?.user?.f3 ?? "",
+            userAttd2?.user?.profileURL ?? "",
+            userAttd2?.user?.hidden ?? false,
+            false));
 
     List<Widget> displayUsers(List<UserLoc> users) {
       if (userAttd2?.user?.hidden == true) {
@@ -2202,26 +2225,28 @@ class _HomeState extends State<Home> {
     List<Widget> UserStreamTest2() {
       return <Widget>[
         StreamBuilder<List<UserLoc>>(
-            stream: DatabaseService().nearbyUsers,
+            stream: firebaseData,
             builder: (_, AsyncSnapshot<List<UserLoc>> snapshot5) {
               if (snapshot5.connectionState == ConnectionState.active) {
                 var nUserAttr = snapshot5.data;
-                print("Length:");
-                print(nUserAttr!.length);
 
                 DateTime now = DateTime.now();
-                UserLoc myLoc = nUserAttr.firstWhere(
-                  (element) => element.uid == userAttd3!.uid,
-                );
+                UserLoc? myLoc;
 
-                nUserAttr.forEach((element) {
+                try {
+                  myLoc = nUserAttr!.firstWhere(
+                    (element) => element.uid == userAttd3!.uid,
+                  );
+                } catch (error) {}
+
+                nUserAttr!.forEach((element) {
                   DateTime ago = element.time!.toDate();
                   int minago = now.difference(ago).inMinutes;
                   element.lastActive = minago.toString();
 
                   int distanceInFeet = ((Geolocator.distanceBetween(
-                              myLoc.position?['geopoint'].latitude,
-                              myLoc.position?['geopoint'].longitude,
+                              myLoc?.position?['geopoint'].latitude ?? 0,
+                              myLoc?.position?['geopoint'].longitude ?? 0,
                               element.position?['geopoint'].latitude,
                               element.position?['geopoint'].longitude)) *
                           3.281)
@@ -2230,17 +2255,17 @@ class _HomeState extends State<Home> {
                   element.distance = distanceInFeet.toString();
                 });
 
-                // Remove older than 30 and same user id
+                // Remove older than 90 and same user id
                 nUserAttr.removeWhere((item) => item.uid == userAttd3!.uid);
                 nUserAttr.removeWhere(
-                    (item) => int.parse(item.lastActive ?? "") > 900);
+                    (item) => int.parse(item.lastActive ?? "") > 90);
                 return SizedBox(
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height,
                     child: Stack(children: displayUsers(nUserAttr)));
               }
 
-              return Text("");
+              return Loading();
             })
       ];
     }
@@ -2324,7 +2349,8 @@ class _HomeState extends State<Home> {
                   userAttd2?.user?.f1 ?? "No fun fact 1",
                   userAttd2?.user?.f2 ?? "No fun fact 2",
                   userAttd2?.user?.f3 ?? "No fun fact 3",
-                  userAttd2?.user?.profileURL ?? "");
+                  userAttd2?.user?.profileURL ?? "",
+                  userAttd3?.uid ?? "");
             },
             child: avatarGen(
                 0xff79DFFF,

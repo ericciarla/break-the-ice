@@ -47,6 +47,7 @@ dependencies:
   image: ^3.0.8
   path_provider: ^2.0.6
   geolocator: ^7.7.1
+  
 
 dev_dependencies:
   flutter_test:
@@ -58,6 +59,11 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^1.0.0
+  flutter_launcher_name: ^0.0.1
+
+flutter_launcher_name:
+  name: "Break The Ice"
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

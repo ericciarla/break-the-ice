@@ -109,12 +109,10 @@ class DatabaseService {
 
   // Location update - working
   Future updateLocation(String fname, String headline, String f1, String f2,
-      String f3, String profileURL, bool hidden) async {
-    var pos = await _determinePosition();
-    print("lat:");
-    print(pos.latitude);
-    print("lon:");
-    print(pos.longitude);
+      String f3, String profileURL, bool hidden, bool first) async {
+    Position? pos;
+    pos = await _determinePosition();
+
     final User? user = await AuthService().getCurrentUser();
     String userId = user?.uid ?? "";
     GeoFirePoint point =
@@ -123,7 +121,6 @@ class DatabaseService {
     if (userId == "") {
       return null;
     } else {
-      print("new location");
       return await locationCollection.doc(userId).set({
         'position': point.data,
         'name': userId,
@@ -180,23 +177,25 @@ class DatabaseService {
     // When we reach here, permissions are granted and we can
     // continue accessing the position of the device.
     var c = await Geolocator.getCurrentPosition();
-    print(c);
     return c;
   }
 
   // Query nearby users - working
   Stream<List<UserLoc>> get nearbyUsers async* {
-    // Problematic line below
-    //var pos = await location.getLocation();
-    var pos = await _determinePosition();
+    Position? pos;
+    pos = await Geolocator.getLastKnownPosition();
+    if (pos == null) {
+      pos = await _determinePosition();
+      print("getting loc");
+    }
+
     GeoFirePoint point =
         geo.point(latitude: pos.latitude, longitude: pos.longitude);
     //GeoFirePoint point = geo.point(latitude: 43.139273, longitude: -70.953941);
 
-    // 500 ft radius in km
-    double radius = 200; //0.1524;
+    // 1000 ft radius in km
+    double radius = 0.3048;
     String field = 'position';
-    print(pos);
 
     var stream = geo
         .collection(collectionRef: locationCollection)
@@ -222,59 +221,5 @@ class DatabaseService {
           "",
           "");
     }).toList();
-  }
-
-  // Stream list of nearby users - working
-  Future<List<NearUserAttDB>> allNearbyUsersAttr(
-      List<UserLoc> usersIDStream) async {
-    List<NearUserAttDB> attrList = [];
-    final User? user = await AuthService().getCurrentUser();
-    String userId = user?.uid ?? " ";
-    DateTime now = DateTime.now();
-    DateTime nowminus30 = DateTime.now().subtract(const Duration(minutes: 900));
-    var pos = await _determinePosition();
-
-    print(usersIDStream.length);
-    usersIDStream.forEach((element) async {
-      DateTime ago = element.time!.toDate();
-      if (element.uid != userId && ago.isAfter(nowminus30)) {
-        print(element.uid);
-        final Stream<UserAttDB> userAttrStream = userAttrCollection
-            .doc(element.uid)
-            .snapshots()
-            .map(userAttDBFromSnapshotNL);
-
-        attrList = [];
-        await for (UserAttDB item in userAttrStream) {
-          if (item.hidden == false) {
-            int minago = now.difference(ago).inMinutes;
-            final lastActive = minago.toString();
-
-            int distanceInFeet = ((Geolocator.distanceBetween(
-                        pos.latitude,
-                        pos.longitude,
-                        element.position?['geopoint'].latitude,
-                        element.position?['geopoint'].longitude)) *
-                    3.281)
-                .round();
-
-            final distance = distanceInFeet.toString();
-            attrList.add(NearUserAttDB(
-              element.uid,
-              lastActive,
-              distance,
-              item.fname,
-              item.headline,
-              item.f1,
-              item.f2,
-              item.f3,
-              false,
-              item.profileURL,
-            ));
-          }
-        }
-      }
-    });
-    return attrList;
   }
 }
