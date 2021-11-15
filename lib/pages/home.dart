@@ -2276,7 +2276,7 @@ class _HomeState extends State<Home> {
                   element.distance = distanceInFeet.toString();
                 });
 
-                // Remove older than 90 and same user id
+                // Remove older than 90 min and same user id
                 nUserAttr.removeWhere((item) => item.uid == userAttd3!.uid);
                 nUserAttr.removeWhere(
                     (item) => int.parse(item.lastActive ?? "") > 90);
