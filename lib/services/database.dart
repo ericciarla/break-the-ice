@@ -123,7 +123,7 @@ class DatabaseService {
     }
 
     if (userId == "" ||
-        (DateTime.now().difference(lr) < Duration(seconds: 59) &&
+        (DateTime.now().difference(lr) < Duration(seconds: 5) &&
             first == false)) {
       print("Not sent");
       return null;
