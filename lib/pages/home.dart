@@ -677,16 +677,16 @@ class _HomeState extends State<Home> {
     }
   }
 
-  late Timer updateLoc;
   late Stream<List<UserLoc>> firebaseData;
+  Timer? _locationTimer;
+  late StreamSubscription<Position>? positionStream;
+
   @override
   void initState() {
     super.initState();
     firebaseData = DatabaseService().nearbyUsers.distinct();
     // Update location
-    print("init");
-    print(widget.UserID);
-
+    print(widget.UserData.fname);
     DatabaseService().updateLocation(
         widget.UserData.fname ?? "",
         widget.UserData.headline ?? "",
@@ -697,45 +697,46 @@ class _HomeState extends State<Home> {
         widget.UserData.hidden ?? false,
         true,
         widget.UserID);
+    //_locationTimer = Timer.periodic(
+    //    Duration(seconds: 5),
+    //    (Timer t) => DatabaseService().updateLocation(
+    //        widget.UserData.fname ?? "",
+    //        widget.UserData.headline ?? "",
+    //        widget.UserData.f1 ?? "",
+    //        widget.UserData.f2 ?? "",
+    //        widget.UserData.f3 ?? "",
+    //        widget.UserData.profileURL ?? "",
+    //        widget.UserData.hidden ?? false,
+    //        false,
+    //        widget.UserID));
+
+    positionStream = Geolocator.getPositionStream(distanceFilter: 3)
+        .listen((Position position) {
+      DatabaseService().updateLocation(
+          widget.UserData.fname ?? "",
+          widget.UserData.headline ?? "",
+          widget.UserData.f1 ?? "",
+          widget.UserData.f2 ?? "",
+          widget.UserData.f3 ?? "",
+          widget.UserData.profileURL ?? "",
+          widget.UserData.hidden ?? false,
+          false,
+          widget.UserID);
+    });
+  }
+
+  @override
+  void dispose() {
+    _locationTimer?.cancel();
+    positionStream?.cancel();
+    print("canceled");
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final userAttd2 = Provider.of<UserAttDbInfo?>(context, listen: false);
     final userAttd3 = Provider.of<UserAtt?>(context, listen: false);
-
-    //const waitTime = Duration(seconds: 30);
-    //updateLoc = Timer.periodic(
-    //    waitTime,
-    //    (Timer t) => DatabaseService().updateLocation(
-    //        userAttd2?.user?.fname ?? "No name",
-    //        userAttd2?.user?.headline ?? "",
-    //        userAttd2?.user?.f1 ?? "",
-    //        userAttd2?.user?.f2 ?? "",
-    //        userAttd2?.user?.f3 ?? "",
-    //        userAttd2?.user?.profileURL ?? "",
-    //        userAttd2?.user?.hidden ?? false,
-    //        false,
-    //        widget.UserID));
-
-    StreamSubscription<Position> positionStream =
-        Geolocator.getPositionStream().listen((Position position) {
-      print(position == null
-          ? 'Unknown'
-          : position.latitude.toString() +
-              ', ' +
-              position.longitude.toString());
-      DatabaseService().updateLocation(
-          userAttd2?.user?.fname ?? "No name",
-          userAttd2?.user?.headline ?? "",
-          userAttd2?.user?.f1 ?? "",
-          userAttd2?.user?.f2 ?? "",
-          userAttd2?.user?.f3 ?? "",
-          userAttd2?.user?.profileURL ?? "",
-          userAttd2?.user?.hidden ?? false,
-          false,
-          widget.UserID);
-    });
 
     List<Widget> displayUsers(List<UserLoc> users) {
       if (userAttd2?.user?.hidden == true) {

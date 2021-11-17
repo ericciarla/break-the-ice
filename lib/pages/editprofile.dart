@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:btiui/models/user_model_db.dart';
 import 'package:btiui/services/storage_service.dart';
 import 'package:btiui/services/user_db_info.dart';
 import 'package:flutter/cupertino.dart';

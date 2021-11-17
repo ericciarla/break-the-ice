@@ -2,6 +2,7 @@ import 'package:btiui/models/user_model.dart';
 import 'package:btiui/models/location_model.dart';
 import 'package:btiui/models/nearby_user_model_db.dart';
 import 'package:btiui/services/auth_service.dart';
+import 'package:btiui/services/user_db_info.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
@@ -116,6 +117,7 @@ class DatabaseService {
     lr = Globals.getLastRun();
     String userId = uid;
     final User? user = await AuthService().getCurrentUser();
+
     String loggedinuid = user?.uid ?? " ";
     if (uid != loggedinuid) {
       print("not matching user id");
@@ -123,7 +125,7 @@ class DatabaseService {
     }
 
     if (userId == "" ||
-        (DateTime.now().difference(lr) < Duration(seconds: 15) &&
+        (DateTime.now().difference(lr) < Duration(seconds: 3) &&
             first == false)) {
       print("Not sent");
       return null;
@@ -132,6 +134,7 @@ class DatabaseService {
       GeoFirePoint point =
           geo.point(latitude: pos.latitude, longitude: pos.longitude);
       print("Sent");
+      print(fname);
       print(pos);
       Globals.changeLastRun(DateTime.now());
       return await locationCollection.doc(userId).set({
