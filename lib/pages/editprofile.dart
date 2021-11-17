@@ -51,6 +51,7 @@ class EditProfileFormState extends State<EditProfileForm> {
     var f2 = userAttd2.user?.f2;
     var f3 = userAttd2.user?.f3;
     var profileURL = userAttd2.user?.profileURL;
+    var hidden = userAttd2.user?.hidden;
 
     fnameController.text = fname!;
     headlineController.text = headline!;
@@ -229,10 +230,11 @@ class EditProfileFormState extends State<EditProfileForm> {
                             f2Controller.text,
                             f3Controller.text,
                             profileURL!,
-                            false,
-                            false);
+                            hidden!,
+                            true,
+                            uid);
 
-                        Future.delayed(const Duration(milliseconds: 2500), () {
+                        Future.delayed(const Duration(milliseconds: 200), () {
                           Navigator.pop(context);
                           Navigator.pop(context);
                         });

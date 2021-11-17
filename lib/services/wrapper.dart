@@ -33,7 +33,9 @@ class Wrapper extends StatelessWidget {
                   if (snapshot3.connectionState == ConnectionState.active &&
                       snapshot3.hasData) {
                     return Home(
-                        nUserAttr: snapshot3.data!, UserData: snapshot2.data!);
+                        nUserAttr: snapshot3.data!,
+                        UserData: snapshot2.data!,
+                        UserID: user.uid);
                   }
                   return Loading();
                 });

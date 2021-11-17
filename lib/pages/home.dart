@@ -31,7 +31,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 class Home extends StatefulWidget {
   final List<UserLoc> nUserAttr;
   final UserAttDB UserData;
-  const Home({required this.nUserAttr, required this.UserData, Key? key})
+  final String UserID;
+  const Home(
+      {required this.UserID,
+      required this.nUserAttr,
+      required this.UserData,
+      Key? key})
       : super(key: key);
 
   @override
@@ -264,6 +269,12 @@ class _HomeState extends State<Home> {
 
   void tapNearbyUser(String fname, String lastActive, String headline,
       String f1, String f2, String f3, String imageID) {
+    var activeMessage = "";
+    if (int.parse(lastActive) < 5) {
+      activeMessage = "Active now";
+    } else {
+      activeMessage = "Active $lastActive minutes ago";
+    }
     showDialog(
       context: context,
       builder: (context) {
@@ -401,7 +412,7 @@ class _HomeState extends State<Home> {
                       ),
                       SizedBox(height: 10),
                       Text(
-                        'Active $lastActive minutes ago',
+                        activeMessage,
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           color: Color(0xff79DFFF),
@@ -673,6 +684,7 @@ class _HomeState extends State<Home> {
     firebaseData = DatabaseService().nearbyUsers.distinct();
     // Update location
     print("init");
+    print(widget.UserID);
     DatabaseService().updateLocation(
         widget.UserData.fname ?? "",
         widget.UserData.headline ?? "",
@@ -681,7 +693,8 @@ class _HomeState extends State<Home> {
         widget.UserData.f3 ?? "",
         widget.UserData.profileURL ?? "",
         widget.UserData.hidden ?? false,
-        true);
+        true,
+        widget.UserID);
   }
 
   @override
@@ -689,7 +702,7 @@ class _HomeState extends State<Home> {
     final userAttd2 = Provider.of<UserAttDbInfo?>(context, listen: false);
     final userAttd3 = Provider.of<UserAtt?>(context, listen: false);
 
-    const waitTime = Duration(seconds: 120);
+    const waitTime = Duration(seconds: 30);
     Timer.periodic(
         waitTime,
         (Timer t) => DatabaseService().updateLocation(
@@ -700,7 +713,8 @@ class _HomeState extends State<Home> {
             userAttd2?.user?.f3 ?? "",
             userAttd2?.user?.profileURL ?? "",
             userAttd2?.user?.hidden ?? false,
-            false));
+            false,
+            widget.UserID));
 
     List<Widget> displayUsers(List<UserLoc> users) {
       if (userAttd2?.user?.hidden == true) {
@@ -2276,10 +2290,13 @@ class _HomeState extends State<Home> {
                   element.distance = distanceInFeet.toString();
                 });
 
-                // Remove older than 90 min and same user id
+                // Remove older than 90 min and same user id and out of 1000ft
                 nUserAttr.removeWhere((item) => item.uid == userAttd3!.uid);
                 nUserAttr.removeWhere(
                     (item) => int.parse(item.lastActive ?? "") > 90);
+                nUserAttr.removeWhere((item) => item.hidden == true);
+                nUserAttr.removeWhere(
+                    (item) => int.parse(item.distance ?? "") > 1000);
                 return SizedBox(
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height,
@@ -2371,7 +2388,7 @@ class _HomeState extends State<Home> {
                   userAttd2?.user?.f2 ?? "No fun fact 2",
                   userAttd2?.user?.f3 ?? "No fun fact 3",
                   userAttd2?.user?.profileURL ?? "",
-                  userAttd3?.uid ?? "");
+                  widget.UserID);
             },
             child: avatarGen(
                 0xff79DFFF,

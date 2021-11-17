@@ -25,7 +25,7 @@ class Storage {
     File('$tempPath/$fileName.jpg').writeAsBytes(encodeJpg(resize));
     //File newFile = File('$tempPath/$fileName.jpg');
     var compressedImage = File('$tempPath/$fileName.jpg')
-      ..writeAsBytesSync(encodeJpg(resize, quality: 85));
+      ..writeAsBytesSync(encodeJpg(resize));
     print(compressedImage.path);
     try {
       try {

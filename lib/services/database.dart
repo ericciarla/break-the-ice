@@ -9,6 +9,7 @@ import '../models/user_model_db.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:location/location.dart';
 import 'package:geolocator/geolocator.dart';
+import 'globals.dart';
 
 class DatabaseService {
   final CollectionReference userAttrCollection =
@@ -109,18 +110,23 @@ class DatabaseService {
 
   // Location update - working
   Future updateLocation(String fname, String headline, String f1, String f2,
-      String f3, String profileURL, bool hidden, bool first) async {
+      String f3, String profileURL, bool hidden, bool first, String uid) async {
     Position? pos;
-    pos = await _determinePosition();
+    DateTime lr;
+    lr = Globals.getLastRun();
+    String userId = uid;
 
-    final User? user = await AuthService().getCurrentUser();
-    String userId = user?.uid ?? "";
-    GeoFirePoint point =
-        geo.point(latitude: pos.latitude, longitude: pos.longitude);
-    //GeoFirePoint point = geo.point(latitude: 43.139273, longitude: -70.953941);
-    if (userId == "") {
+    if (userId == "" ||
+        (DateTime.now().difference(lr) < Duration(seconds: 59) &&
+            first == false)) {
+      print("Not sent");
       return null;
     } else {
+      pos = await _determinePosition();
+      GeoFirePoint point =
+          geo.point(latitude: pos.latitude, longitude: pos.longitude);
+      print("Sent");
+      Globals.changeLastRun(DateTime.now());
       return await locationCollection.doc(userId).set({
         'position': point.data,
         'name': userId,
@@ -183,18 +189,14 @@ class DatabaseService {
   // Query nearby users - working
   Stream<List<UserLoc>> get nearbyUsers async* {
     Position? pos;
-    pos = await Geolocator.getLastKnownPosition();
-    if (pos == null) {
-      pos = await _determinePosition();
-      print("getting loc");
-    }
+    //pos = await Geolocator.getLastKnownPosition();
+    pos = await _determinePosition();
 
     GeoFirePoint point =
         geo.point(latitude: pos.latitude, longitude: pos.longitude);
-    //GeoFirePoint point = geo.point(latitude: 43.139273, longitude: -70.953941);
 
     // 1000 ft radius in km
-    double radius = 0.3048;
+    double radius = 10;
     String field = 'position';
 
     var stream = geo
