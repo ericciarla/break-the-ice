@@ -115,6 +115,12 @@ class DatabaseService {
     DateTime lr;
     lr = Globals.getLastRun();
     String userId = uid;
+    final User? user = await AuthService().getCurrentUser();
+    String loggedinuid = user?.uid ?? " ";
+    if (uid != loggedinuid) {
+      print("not matching user id");
+      return null;
+    }
 
     if (userId == "" ||
         (DateTime.now().difference(lr) < Duration(seconds: 59) &&
@@ -126,6 +132,7 @@ class DatabaseService {
       GeoFirePoint point =
           geo.point(latitude: pos.latitude, longitude: pos.longitude);
       print("Sent");
+      print(pos);
       Globals.changeLastRun(DateTime.now());
       return await locationCollection.doc(userId).set({
         'position': point.data,

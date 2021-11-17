@@ -677,6 +677,7 @@ class _HomeState extends State<Home> {
     }
   }
 
+  late Timer updateLoc;
   late Stream<List<UserLoc>> firebaseData;
   @override
   void initState() {
@@ -685,6 +686,7 @@ class _HomeState extends State<Home> {
     // Update location
     print("init");
     print(widget.UserID);
+
     DatabaseService().updateLocation(
         widget.UserData.fname ?? "",
         widget.UserData.headline ?? "",
@@ -702,19 +704,38 @@ class _HomeState extends State<Home> {
     final userAttd2 = Provider.of<UserAttDbInfo?>(context, listen: false);
     final userAttd3 = Provider.of<UserAtt?>(context, listen: false);
 
-    const waitTime = Duration(seconds: 30);
-    Timer.periodic(
-        waitTime,
-        (Timer t) => DatabaseService().updateLocation(
-            userAttd2?.user?.fname ?? "No name",
-            userAttd2?.user?.headline ?? "",
-            userAttd2?.user?.f1 ?? "",
-            userAttd2?.user?.f2 ?? "",
-            userAttd2?.user?.f3 ?? "",
-            userAttd2?.user?.profileURL ?? "",
-            userAttd2?.user?.hidden ?? false,
-            false,
-            widget.UserID));
+    //const waitTime = Duration(seconds: 30);
+    //updateLoc = Timer.periodic(
+    //    waitTime,
+    //    (Timer t) => DatabaseService().updateLocation(
+    //        userAttd2?.user?.fname ?? "No name",
+    //        userAttd2?.user?.headline ?? "",
+    //        userAttd2?.user?.f1 ?? "",
+    //        userAttd2?.user?.f2 ?? "",
+    //        userAttd2?.user?.f3 ?? "",
+    //        userAttd2?.user?.profileURL ?? "",
+    //        userAttd2?.user?.hidden ?? false,
+    //        false,
+    //        widget.UserID));
+
+    StreamSubscription<Position> positionStream =
+        Geolocator.getPositionStream().listen((Position position) {
+      print(position == null
+          ? 'Unknown'
+          : position.latitude.toString() +
+              ', ' +
+              position.longitude.toString());
+      DatabaseService().updateLocation(
+          userAttd2?.user?.fname ?? "No name",
+          userAttd2?.user?.headline ?? "",
+          userAttd2?.user?.f1 ?? "",
+          userAttd2?.user?.f2 ?? "",
+          userAttd2?.user?.f3 ?? "",
+          userAttd2?.user?.profileURL ?? "",
+          userAttd2?.user?.hidden ?? false,
+          false,
+          widget.UserID);
+    });
 
     List<Widget> displayUsers(List<UserLoc> users) {
       if (userAttd2?.user?.hidden == true) {
