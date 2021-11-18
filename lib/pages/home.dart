@@ -2310,37 +2310,40 @@ class _HomeState extends State<Home> {
                       .round();
                   String distanceText = "";
                   if (distanceInFeet <= 50) {
-                    distanceText = "Under 50ft";
+                    distanceText = "~10ft";
                   }
                   if (distanceInFeet > 50 && distanceInFeet <= 100) {
-                    distanceText = "Under 100ft";
+                    distanceText = "~50ft";
                   }
                   if (distanceInFeet > 100 && distanceInFeet <= 200) {
-                    distanceText = "Under 200ft";
+                    distanceText = "~100ft";
                   }
                   if (distanceInFeet > 200 && distanceInFeet <= 300) {
-                    distanceText = "Under 300ft";
+                    distanceText = "~200ft";
                   }
                   if (distanceInFeet > 300 && distanceInFeet <= 400) {
-                    distanceText = "Under 400ft";
+                    distanceText = "~300ft";
                   }
                   if (distanceInFeet > 400 && distanceInFeet <= 500) {
-                    distanceText = "Under 500ft";
+                    distanceText = "~400ft";
                   }
                   if (distanceInFeet > 500 && distanceInFeet <= 600) {
-                    distanceText = "Under 600ft";
+                    distanceText = "~500ft";
                   }
                   if (distanceInFeet > 600 && distanceInFeet <= 700) {
-                    distanceText = "Under 700ft";
+                    distanceText = "~600ft";
                   }
                   if (distanceInFeet > 700 && distanceInFeet <= 800) {
-                    distanceText = "Under 800ft";
+                    distanceText = "~700ft";
                   }
                   if (distanceInFeet > 800 && distanceInFeet <= 900) {
-                    distanceText = "Under 900ft";
+                    distanceText = "~800ft";
                   }
                   if (distanceInFeet > 900 && distanceInFeet <= 1000) {
-                    distanceText = "Under 1000ft";
+                    distanceText = "~900ft";
+                  }
+                  if (distanceInFeet > 1000) {
+                    distanceText = "Over 1000ft";
                   }
 
                   element.distance = distanceText;
@@ -2351,8 +2354,7 @@ class _HomeState extends State<Home> {
                 nUserAttr.removeWhere(
                     (item) => int.parse(item.lastActive ?? "") > 90);
                 nUserAttr.removeWhere((item) => item.hidden == true);
-                nUserAttr.removeWhere(
-                    (item) => int.parse(item.distance ?? "") > 1000);
+                nUserAttr.removeWhere((item) => item.distance == "Over 1000ft");
                 return SizedBox(
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height,
