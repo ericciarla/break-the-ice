@@ -26,7 +26,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   /// The future is part of the state of our widget. We should not call `initializeApp`
-  /// directly inside [build].
+
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
   @override
@@ -42,21 +42,20 @@ class _MyAppState extends State<MyApp> {
           create: (_) => DatabaseService(),
         ),
         ChangeNotifierProvider<UserAttDbInfo?>(
-              create: (_) => UserAttDbInfo(),
-            ),
+          create: (_) => UserAttDbInfo(),
+        ),
       ],
       child: MaterialApp(
         title: 'Break The Ice',
         theme: ThemeData(
           primaryColor: const Color(0xff79DFFF),
         ),
-        home:AuthWidgetBuilder(
-          builder: (context, userSnapshot) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          home: AuthWidget(userSnapshot: userSnapshot),
-        );
-      }),
+        home: AuthWidgetBuilder(builder: (context, userSnapshot) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            home: AuthWidget(userSnapshot: userSnapshot),
+          );
+        }),
       ),
     );
   }

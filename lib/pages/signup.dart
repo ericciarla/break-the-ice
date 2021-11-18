@@ -274,13 +274,11 @@ class SignUpFormState extends State<SignUpForm> {
                   ElevatedButton(
                     onPressed: () async {
                       if (_signupformKey.currentState!.validate()) {
-                        Fluttertoast.showToast(
-                            msg: "Processing Data",
-                            toastLength: Toast.LENGTH_LONG,
-                            gravity: ToastGravity.CENTER,
-                            backgroundColor: Colors.white,
-                            textColor: Colors.black,
-                            fontSize: 16.0);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Loading()),
+                        );
+
                         if (path != "no file") {
                           await storage.UploadImage(path, fileName)
                               .then((value) {
@@ -288,10 +286,6 @@ class SignUpFormState extends State<SignUpForm> {
                             print(profileURL);
                           });
 
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => Loading()),
-                          );
                           await authService.createUserWithEmailAndPassword(
                               emailController.text, passwordController.text);
                           await DatabaseService().updateUserData(

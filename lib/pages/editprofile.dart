@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:btiui/models/user_model_db.dart';
+import 'package:btiui/pages/loading.dart';
 import 'package:btiui/services/storage_service.dart';
 import 'package:btiui/services/user_db_info.dart';
 import 'package:flutter/cupertino.dart';
@@ -208,13 +209,10 @@ class EditProfileFormState extends State<EditProfileForm> {
                       if (_editformKey.currentState!.validate()) {
                         // If the form is valid, display a snackbar. In the real world,
                         // you'd often call a server or save the information in a database.
-                        Fluttertoast.showToast(
-                            msg: "Processing Data",
-                            toastLength: Toast.LENGTH_LONG,
-                            gravity: ToastGravity.CENTER,
-                            backgroundColor: Colors.white,
-                            textColor: Colors.black,
-                            fontSize: 16.0);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Loading()),
+                        );
 
                         await DatabaseService().updateUserData(
                             fnameController.text,
@@ -236,6 +234,7 @@ class EditProfileFormState extends State<EditProfileForm> {
                             uid);
 
                         Future.delayed(const Duration(milliseconds: 200), () {
+                          Navigator.pop(context);
                           Navigator.pop(context);
                           Navigator.pop(context);
                         });
