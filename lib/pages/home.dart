@@ -710,7 +710,7 @@ class _HomeState extends State<Home> {
     //        false,
     //        widget.UserID));
 
-    positionStream = Geolocator.getPositionStream(distanceFilter: 8)
+    positionStream = Geolocator.getPositionStream(distanceFilter: 6)
         .listen((Position position) {
       DatabaseService().updateLocation(
           widget.UserData.fname ?? "",
