@@ -100,6 +100,7 @@ class EditProfileFormState extends State<EditProfileForm> {
                       controller: fnameController,
 
                       //maxLength: 65,
+                      textCapitalization: TextCapitalization.sentences,
                       decoration: const InputDecoration(
                         //icon: Icon(Icons.person),
                         labelText: 'First Name *',
@@ -119,6 +120,7 @@ class EditProfileFormState extends State<EditProfileForm> {
                       controller: headlineController,
 
                       //maxLength: 65,
+                      textCapitalization: TextCapitalization.sentences,
                       decoration: const InputDecoration(
                         //icon: Icon(Icons.person),
                         hintText: 'Ex. Economics Major @ UNH ',
@@ -137,7 +139,7 @@ class EditProfileFormState extends State<EditProfileForm> {
                     SizedBox(height: 10),
                     TextFormField(
                       controller: f1Controller,
-
+                      textCapitalization: TextCapitalization.sentences,
                       //maxLength: 65,
                       decoration: const InputDecoration(
                         //icon: Icon(Icons.person),
@@ -159,7 +161,7 @@ class EditProfileFormState extends State<EditProfileForm> {
                     TextFormField(
                       //maxLength: 65,
                       controller: f2Controller,
-
+                      textCapitalization: TextCapitalization.sentences,
                       decoration: const InputDecoration(
                         //icon: Icon(Icons.person),
                         hintText: 'Ex. Economics and Data Science',
@@ -180,7 +182,7 @@ class EditProfileFormState extends State<EditProfileForm> {
                     TextFormField(
                       controller: f3Controller,
                       //maxLength: 65,
-
+                      textCapitalization: TextCapitalization.sentences,
                       decoration: const InputDecoration(
                         //icon: Icon(Icons.person),
                         hintText: 'Ex. I have a beach house in Maine',

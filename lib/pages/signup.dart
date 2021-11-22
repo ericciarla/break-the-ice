@@ -152,6 +152,7 @@ class SignUpFormState extends State<SignUpForm> {
                   //initialValue: "Eric",
                   //maxLength: 65,
                   controller: fnameController,
+                  textCapitalization: TextCapitalization.sentences,
                   decoration: const InputDecoration(
                     //icon: Icon(Icons.person),
                     labelText: 'First Name *',
@@ -172,6 +173,7 @@ class SignUpFormState extends State<SignUpForm> {
                   //maxLength: 65,
                   //initialValue: "Economics Major at UNH",
                   controller: headlineController,
+                  textCapitalization: TextCapitalization.sentences,
                   decoration: const InputDecoration(
                     //icon: Icon(Icons.person),
                     hintText: 'Ex. Economics Major @ UNH ',
@@ -192,6 +194,7 @@ class SignUpFormState extends State<SignUpForm> {
                   //maxLength: 65,
                   //initialValue: "",
                   controller: f1Controller,
+                  textCapitalization: TextCapitalization.sentences,
                   decoration: const InputDecoration(
                     //icon: Icon(Icons.person),
                     hintText: 'Ex. My favorite place in the world is Rome',
@@ -212,6 +215,7 @@ class SignUpFormState extends State<SignUpForm> {
                   //maxLength: 65,
                   //initialValue: "",
                   controller: f2Controller,
+                  textCapitalization: TextCapitalization.sentences,
                   decoration: const InputDecoration(
                     //icon: Icon(Icons.person),
                     hintText: 'Ex. Economics and Data Science',
@@ -232,6 +236,7 @@ class SignUpFormState extends State<SignUpForm> {
                   //maxLength: 65,
                   //initialValue: "",
                   controller: f3Controller,
+                  textCapitalization: TextCapitalization.sentences,
                   decoration: const InputDecoration(
                     //icon: Icon(Icons.person),
                     hintText: 'Ex. I have a beach house in Maine',
@@ -253,11 +258,14 @@ class SignUpFormState extends State<SignUpForm> {
                   controller: emailController,
                   decoration: const InputDecoration(
                     //icon: Icon(Icons.person),
-                    labelText: 'Email *',
+                    labelText: 'Email (Must be .edu) *',
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter some text';
+                    }
+                    if (!value.contains("edu")) {
+                      return 'Please use you edu email';
                     }
                     return null;
                   },
