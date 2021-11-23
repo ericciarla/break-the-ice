@@ -688,6 +688,14 @@ class _HomeState extends State<Home> {
     }
   }
 
+  double screenSizeAvaOwn() {
+    if (MediaQuery.of(context).size.height > 800) {
+      return 70;
+    } else {
+      return 60;
+    }
+  }
+
   late Stream<List<UserLoc>> firebaseData;
   Timer? _locationTimer;
   late StreamSubscription<Position>? positionStream;
@@ -2455,7 +2463,7 @@ class _HomeState extends State<Home> {
             },
             child: avatarGen(
                 0xff79DFFF,
-                70,
+                screenSizeAvaOwn(),
                 userAttd2?.user?.fname ?? "No name",
                 "",
                 userAttd2?.user?.profileURL ?? ""),
@@ -2494,37 +2502,41 @@ Widget conCircles(double rad) => Container(
     );
 
 Widget avatarGen(
-        int cVal, double rad, String name, String dist, String imageID) =>
-    Column(
-      children: [
-        CircleAvatar(
-          backgroundColor: Color(cVal),
-          radius: rad,
-          // ignore: prefer_const_constructors
-          child: CircleAvatar(
-            backgroundImage: NetworkImage(imageID),
-            radius: rad - 5,
+    int cVal, double rad, String name, String dist, String imageID) {
+  if (name.length > 10) {
+    name = name.substring(0, 9) + "...";
+  }
+  return Column(
+    children: [
+      CircleAvatar(
+        backgroundColor: Color(cVal),
+        radius: rad,
+        // ignore: prefer_const_constructors
+        child: CircleAvatar(
+          backgroundImage: NetworkImage(imageID),
+          radius: rad - 5,
+        ),
+      ),
+      RichText(
+        text: TextSpan(children: <TextSpan>[
+          TextSpan(
+            text: name + " ",
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              color: Color(0xffc4c4c4),
+              fontSize: 16,
+            ),
           ),
-        ),
-        RichText(
-          text: TextSpan(children: <TextSpan>[
-            TextSpan(
-              text: name + " ",
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                color: Color(0xffc4c4c4),
-                fontSize: 16,
-              ),
+          TextSpan(
+            text: dist,
+            style: const TextStyle(
+              fontWeight: FontWeight.w400,
+              color: Color(0xffc4c4c4),
+              fontSize: 16,
             ),
-            TextSpan(
-              text: dist,
-              style: const TextStyle(
-                fontWeight: FontWeight.w400,
-                color: Color(0xffc4c4c4),
-                fontSize: 16,
-              ),
-            ),
-          ]),
-        ),
-      ],
-    );
+          ),
+        ]),
+      ),
+    ],
+  );
+}
