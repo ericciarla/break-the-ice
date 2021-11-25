@@ -53,6 +53,7 @@ class _MyAppState extends State<MyApp> {
         ),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Break The Ice',
         theme: ThemeData(
           primaryColor: const Color(0xff79DFFF),

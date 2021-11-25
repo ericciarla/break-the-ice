@@ -15,6 +15,7 @@ class _WelcomeState extends State<Welcome> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Break The Ice',
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xff79DFFF),

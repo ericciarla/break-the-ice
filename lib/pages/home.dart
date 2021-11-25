@@ -47,12 +47,12 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   // ON TAP FUNCTIONS
-  void tapReport() {
+  void tapBlock(String uid) {
     showCupertinoDialog<void>(
       context: context,
       builder: (BuildContext context) => CupertinoAlertDialog(
-        title: const Text('Report User'),
-        content: const Text('Do you want to report this user?'),
+        title: const Text('Block User'),
+        content: const Text('Do you want to block this user?'),
         actions: <CupertinoDialogAction>[
           CupertinoDialogAction(
             child: const Text('No'),
@@ -65,6 +65,9 @@ class _HomeState extends State<Home> {
             isDestructiveAction: true,
             onPressed: () {
               // Do something destructive.
+              DatabaseService().blockUser(uid);
+              Navigator.pop(context);
+              Navigator.pop(context);
             },
           )
         ],
@@ -159,125 +162,125 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void tapActivity() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Dialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
-          elevation: 160,
-          child: Container(
-            //height: (MediaQuery.of(context).size.height / 2),
-            padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
-            child: ListView(
-              shrinkWrap: true,
-              children: <Widget>[
-                SizedBox(height: 10),
-                Center(
-                  child: Text(
-                    'Activity',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      //color: Color(0xffc4c4c4),
-                      fontSize: 18,
-                    ),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                    tapNearbyUser(
-                        "Jim",
-                        "40ft",
-                        "Data Science Manger - Customer Experience",
-                        "I like to Golf",
-                        "I have a German Shepard",
-                        "I am restoring a sailboat",
-                        "p1");
-                  },
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Color(0xff79DFFF),
-                      radius: 26,
-                      // ignore: prefer_const_constructors
-                      child: CircleAvatar(
-                        backgroundImage: const AssetImage('images/p1.jpeg'),
-                        radius: 23,
-                      ),
-                    ),
-                    title: Text('Jim waved at you'),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-
-                    tapNearbyUser(
-                        "Hannah",
-                        "40ft",
-                        "Software Engineer - UI",
-                        "I have 2 dogs",
-                        "My favorite movie is Forrest Gump",
-                        "Cycling in the Bay",
-                        "p3");
-                  },
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Color(0xff79DFFF),
-                      radius: 26,
-                      // ignore: prefer_const_constructors
-                      child: CircleAvatar(
-                        backgroundImage: const AssetImage('images/p3.jpeg'),
-                        radius: 23,
-                      ),
-                    ),
-                    title: Text('Hannah waved at you'),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                    tapNearbyUser(
-                        "Angela",
-                        "20ft",
-                        "Head of Marketing - Enterprise",
-                        "My favorite coffee is from Columbia",
-                        "I recently went on a trip to Italy",
-                        "I like to run marathons",
-                        "p2");
-                  },
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Color(0xffc4c4c4),
-                      radius: 26,
-                      // ignore: prefer_const_constructors
-                      child: CircleAvatar(
-                        backgroundImage: const AssetImage('images/p2.jpeg'),
-                        radius: 23,
-                      ),
-                    ),
-                    title: Text('You viewed and waved at Angela'),
-                  ),
-                ),
-                SizedBox(height: 10),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
+  //void tapActivity() {
+  //  showDialog(
+  //    context: context,
+  //    builder: (context) {
+  //      return Dialog(
+  //        shape:
+  //            RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+  //        elevation: 160,
+  //        child: Container(
+  //          //height: (MediaQuery.of(context).size.height / 2),
+  //          padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+  //          child: ListView(
+  //            shrinkWrap: true,
+  //            children: <Widget>[
+  //              SizedBox(height: 10),
+  //              Center(
+  //                child: Text(
+  //                  'Activity',
+  //                  style: TextStyle(
+  //                    fontWeight: FontWeight.w600,
+  //                    //color: Color(0xffc4c4c4),
+  //                    fontSize: 18,
+  //                  ),
+  //                ),
+  //              ),
+  //              GestureDetector(
+  //                onTap: () {
+  //                  Navigator.pop(context);
+  //                  tapNearbyUser(
+  //                      "Jim",
+  //                      "40ft",
+  //                      "Data Science Manger - Customer Experience",
+  //                      "I like to Golf",
+  //                      "I have a German Shepard",
+  //                      "I am restoring a sailboat",
+  //                      "p1");
+  //                },
+  //                child: ListTile(
+  //                  leading: CircleAvatar(
+  //                    backgroundColor: Color(0xff79DFFF),
+  //                    radius: 26,
+  //                    // ignore: prefer_const_constructors
+  //                    child: CircleAvatar(
+  //                      backgroundImage: const AssetImage('images/p1.jpeg'),
+  //                      radius: 23,
+  //                    ),
+  //                  ),
+  //                  title: Text('Jim waved at you'),
+  //                ),
+  //              ),
+  //              GestureDetector(
+  //                onTap: () {
+  //                  Navigator.pop(context);
+//
+  //                  tapNearbyUser(
+  //                      "Hannah",
+  //                      "40ft",
+  //                      "Software Engineer - UI",
+  //                      "I have 2 dogs",
+  //                      "My favorite movie is Forrest Gump",
+  //                      "Cycling in the Bay",
+  //                      "p3");
+  //                },
+  //                child: ListTile(
+  //                  leading: CircleAvatar(
+  //                    backgroundColor: Color(0xff79DFFF),
+  //                    radius: 26,
+  //                    // ignore: prefer_const_constructors
+  //                    child: CircleAvatar(
+  //                      backgroundImage: const AssetImage('images/p3.jpeg'),
+  //                      radius: 23,
+  //                    ),
+  //                  ),
+  //                  title: Text('Hannah waved at you'),
+  //                ),
+  //              ),
+  //              GestureDetector(
+  //                onTap: () {
+  //                  Navigator.pop(context);
+  //                  tapNearbyUser(
+  //                      "Angela",
+  //                      "20ft",
+  //                      "Head of Marketing - Enterprise",
+  //                      "My favorite coffee is from Columbia",
+  //                      "I recently went on a trip to Italy",
+  //                      "I like to run marathons",
+  //                      "p2");
+  //                },
+  //                child: ListTile(
+  //                  leading: CircleAvatar(
+  //                    backgroundColor: Color(0xffc4c4c4),
+  //                    radius: 26,
+  //                    // ignore: prefer_const_constructors
+  //                    child: CircleAvatar(
+  //                      backgroundImage: const AssetImage('images/p2.jpeg'),
+  //                      radius: 23,
+  //                    ),
+  //                  ),
+  //                  title: Text('You viewed and waved at Angela'),
+  //                ),
+  //              ),
+  //              SizedBox(height: 10),
+  //            ],
+  //          ),
+  //        ),
+  //      );
+  //    },
+  //  );
+  //}
 
   FirebaseAnalytics analytics = FirebaseAnalytics();
 
-  void tapNearbyUser(String fname, String lastActive, String headline,
-      String f1, String f2, String f3, String imageID) {
+  void tapNearbyUser(String uid, String fname, String lastActive,
+      String headline, String f1, String f2, String f3, String imageID) {
     var activeMessage = "";
     analytics.logEvent(
       name: 'Tap_nearby_user',
       parameters: <String, dynamic>{
-        'Tapped_User': imageID,
+        'Tapped_User': uid,
       },
     );
     print("tapped");
@@ -464,30 +467,30 @@ class _HomeState extends State<Home> {
                   //    ),
                   //  ],
                   //),
-                  SizedBox(height: 20),
-                  //Row(
-                  //  mainAxisAlignment: MainAxisAlignment.end,
-                  //  crossAxisAlignment: CrossAxisAlignment.start,
-                  //  children: [
-                  //    GestureDetector(
-                  //      onTap: () {
-                  //        tapReport();
-                  //      },
-                  //      child: Container(
-                  //        margin: const EdgeInsets.only(right: 22.0, bottom: 5),
-                  //        child: Text(
-                  //          'Report',
-                  //          style: TextStyle(
-                  //            fontWeight: FontWeight.w500,
-                  //            color: Color(0xffc4c4c4),
-                  //            fontSize: 14,
-                  //          ),
-                  //          textAlign: TextAlign.center,
-                  //        ),
-                  //      ),
-                  //    ),
-                  //  ],
-                  //),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          tapBlock(uid);
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(right: 25.0, bottom: 8),
+                          child: Text(
+                            'Block',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xffc4c4c4),
+                              fontSize: 15,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -736,6 +739,8 @@ class _HomeState extends State<Home> {
           widget.UserID,
           point);
     });
+
+    //print(widget.UserData.blocked);
   }
 
   @override
@@ -801,6 +806,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[0].uid,
                     users[0].fname ?? "",
                     users[0].lastActive ?? "",
                     users[0].headline ?? "",
@@ -827,6 +833,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[0].uid,
                     users[0].fname ?? "",
                     users[0].lastActive ?? "",
                     users[0].headline ?? "",
@@ -849,6 +856,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[1].uid,
                     users[1].fname ?? "",
                     users[1].lastActive ?? "",
                     users[1].headline ?? "",
@@ -875,6 +883,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[0].uid,
                     users[0].fname ?? "",
                     users[0].lastActive ?? "",
                     users[0].headline ?? "",
@@ -897,6 +906,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[1].uid,
                     users[1].fname ?? "",
                     users[1].lastActive ?? "",
                     users[1].headline ?? "",
@@ -919,6 +929,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[2].uid,
                     users[2].fname ?? "",
                     users[2].lastActive ?? "",
                     users[2].headline ?? "",
@@ -945,6 +956,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[0].uid,
                     users[0].fname ?? "",
                     users[0].lastActive ?? "",
                     users[0].headline ?? "",
@@ -967,6 +979,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[1].uid,
                     users[1].fname ?? "",
                     users[1].lastActive ?? "",
                     users[1].headline ?? "",
@@ -989,6 +1002,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[2].uid,
                     users[2].fname ?? "",
                     users[2].lastActive ?? "",
                     users[2].headline ?? "",
@@ -1011,6 +1025,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[3].uid,
                     users[3].fname ?? "",
                     users[3].lastActive ?? "",
                     users[3].headline ?? "",
@@ -1037,6 +1052,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[0].uid,
                     users[0].fname ?? "",
                     users[0].lastActive ?? "",
                     users[0].headline ?? "",
@@ -1059,6 +1075,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[1].uid,
                     users[1].fname ?? "",
                     users[1].lastActive ?? "",
                     users[1].headline ?? "",
@@ -1081,6 +1098,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[2].uid,
                     users[2].fname ?? "",
                     users[2].lastActive ?? "",
                     users[2].headline ?? "",
@@ -1103,6 +1121,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[3].uid,
                     users[3].fname ?? "",
                     users[3].lastActive ?? "",
                     users[3].headline ?? "",
@@ -1125,6 +1144,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[4].uid,
                     users[4].fname ?? "",
                     users[4].lastActive ?? "",
                     users[4].headline ?? "",
@@ -1151,6 +1171,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[0].uid,
                     users[0].fname ?? "",
                     users[0].lastActive ?? "",
                     users[0].headline ?? "",
@@ -1173,6 +1194,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[1].uid,
                     users[1].fname ?? "",
                     users[1].lastActive ?? "",
                     users[1].headline ?? "",
@@ -1195,6 +1217,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[2].uid,
                     users[2].fname ?? "",
                     users[2].lastActive ?? "",
                     users[2].headline ?? "",
@@ -1217,6 +1240,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[3].uid,
                     users[3].fname ?? "",
                     users[3].lastActive ?? "",
                     users[3].headline ?? "",
@@ -1239,6 +1263,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[4].uid,
                     users[4].fname ?? "",
                     users[4].lastActive ?? "",
                     users[4].headline ?? "",
@@ -1261,6 +1286,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[5].uid,
                     users[5].fname ?? "",
                     users[5].lastActive ?? "",
                     users[5].headline ?? "",
@@ -1287,6 +1313,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[0].uid,
                     users[0].fname ?? "",
                     users[0].lastActive ?? "",
                     users[0].headline ?? "",
@@ -1309,6 +1336,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[1].uid,
                     users[1].fname ?? "",
                     users[1].lastActive ?? "",
                     users[1].headline ?? "",
@@ -1331,6 +1359,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[2].uid,
                     users[2].fname ?? "",
                     users[2].lastActive ?? "",
                     users[2].headline ?? "",
@@ -1353,6 +1382,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[3].uid,
                     users[3].fname ?? "",
                     users[3].lastActive ?? "",
                     users[3].headline ?? "",
@@ -1375,6 +1405,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[4].uid,
                     users[4].fname ?? "",
                     users[4].lastActive ?? "",
                     users[4].headline ?? "",
@@ -1397,6 +1428,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[5].uid,
                     users[5].fname ?? "",
                     users[5].lastActive ?? "",
                     users[5].headline ?? "",
@@ -1419,6 +1451,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[6].uid,
                     users[6].fname ?? "",
                     users[6].lastActive ?? "",
                     users[6].headline ?? "",
@@ -1445,6 +1478,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[0].uid,
                     users[0].fname ?? "",
                     users[0].lastActive ?? "",
                     users[0].headline ?? "",
@@ -1467,6 +1501,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[1].uid,
                     users[1].fname ?? "",
                     users[1].lastActive ?? "",
                     users[1].headline ?? "",
@@ -1489,6 +1524,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[2].uid,
                     users[2].fname ?? "",
                     users[2].lastActive ?? "",
                     users[2].headline ?? "",
@@ -1511,6 +1547,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[3].uid,
                     users[3].fname ?? "",
                     users[3].lastActive ?? "",
                     users[3].headline ?? "",
@@ -1533,6 +1570,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[4].uid,
                     users[4].fname ?? "",
                     users[4].lastActive ?? "",
                     users[4].headline ?? "",
@@ -1555,6 +1593,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[5].uid,
                     users[5].fname ?? "",
                     users[5].lastActive ?? "",
                     users[5].headline ?? "",
@@ -1577,6 +1616,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[6].uid,
                     users[6].fname ?? "",
                     users[6].lastActive ?? "",
                     users[6].headline ?? "",
@@ -1599,6 +1639,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[7].uid,
                     users[7].fname ?? "",
                     users[7].lastActive ?? "",
                     users[7].headline ?? "",
@@ -1625,6 +1666,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[0].uid,
                     users[0].fname ?? "",
                     users[0].lastActive ?? "",
                     users[0].headline ?? "",
@@ -1647,6 +1689,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[1].uid,
                     users[1].fname ?? "",
                     users[1].lastActive ?? "",
                     users[1].headline ?? "",
@@ -1669,6 +1712,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[2].uid,
                     users[2].fname ?? "",
                     users[2].lastActive ?? "",
                     users[2].headline ?? "",
@@ -1691,6 +1735,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[3].uid,
                     users[3].fname ?? "",
                     users[3].lastActive ?? "",
                     users[3].headline ?? "",
@@ -1713,6 +1758,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[4].uid,
                     users[4].fname ?? "",
                     users[4].lastActive ?? "",
                     users[4].headline ?? "",
@@ -1735,6 +1781,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[5].uid,
                     users[5].fname ?? "",
                     users[5].lastActive ?? "",
                     users[5].headline ?? "",
@@ -1757,6 +1804,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[6].uid,
                     users[6].fname ?? "",
                     users[6].lastActive ?? "",
                     users[6].headline ?? "",
@@ -1779,6 +1827,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[7].uid,
                     users[7].fname ?? "",
                     users[7].lastActive ?? "",
                     users[7].headline ?? "",
@@ -1801,6 +1850,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[8].uid,
                     users[8].fname ?? "",
                     users[8].lastActive ?? "",
                     users[8].headline ?? "",
@@ -1827,6 +1877,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[0].uid,
                     users[0].fname ?? "",
                     users[0].lastActive ?? "",
                     users[0].headline ?? "",
@@ -1849,6 +1900,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[1].uid,
                     users[1].fname ?? "",
                     users[1].lastActive ?? "",
                     users[1].headline ?? "",
@@ -1871,6 +1923,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[2].uid,
                     users[2].fname ?? "",
                     users[2].lastActive ?? "",
                     users[2].headline ?? "",
@@ -1893,6 +1946,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[3].uid,
                     users[3].fname ?? "",
                     users[3].lastActive ?? "",
                     users[3].headline ?? "",
@@ -1915,6 +1969,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[4].uid,
                     users[4].fname ?? "",
                     users[4].lastActive ?? "",
                     users[4].headline ?? "",
@@ -1937,6 +1992,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[5].uid,
                     users[5].fname ?? "",
                     users[5].lastActive ?? "",
                     users[5].headline ?? "",
@@ -1959,6 +2015,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[6].uid,
                     users[6].fname ?? "",
                     users[6].lastActive ?? "",
                     users[6].headline ?? "",
@@ -1981,6 +2038,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[7].uid,
                     users[7].fname ?? "",
                     users[7].lastActive ?? "",
                     users[7].headline ?? "",
@@ -2003,6 +2061,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[8].uid,
                     users[8].fname ?? "",
                     users[8].lastActive ?? "",
                     users[8].headline ?? "",
@@ -2025,6 +2084,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[9].uid,
                     users[9].fname ?? "",
                     users[9].lastActive ?? "",
                     users[9].headline ?? "",
@@ -2051,6 +2111,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[0].uid,
                     users[0].fname ?? "",
                     users[0].lastActive ?? "",
                     users[0].headline ?? "",
@@ -2073,6 +2134,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[1].uid,
                     users[1].fname ?? "",
                     users[1].lastActive ?? "",
                     users[1].headline ?? "",
@@ -2095,6 +2157,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[2].uid,
                     users[2].fname ?? "",
                     users[2].lastActive ?? "",
                     users[2].headline ?? "",
@@ -2117,6 +2180,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[3].uid,
                     users[3].fname ?? "",
                     users[3].lastActive ?? "",
                     users[3].headline ?? "",
@@ -2139,6 +2203,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[4].uid,
                     users[4].fname ?? "",
                     users[4].lastActive ?? "",
                     users[4].headline ?? "",
@@ -2161,6 +2226,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[5].uid,
                     users[5].fname ?? "",
                     users[5].lastActive ?? "",
                     users[5].headline ?? "",
@@ -2183,6 +2249,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[6].uid,
                     users[6].fname ?? "",
                     users[6].lastActive ?? "",
                     users[6].headline ?? "",
@@ -2205,6 +2272,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[7].uid,
                     users[7].fname ?? "",
                     users[7].lastActive ?? "",
                     users[7].headline ?? "",
@@ -2227,6 +2295,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[8].uid,
                     users[8].fname ?? "",
                     users[8].lastActive ?? "",
                     users[8].headline ?? "",
@@ -2249,6 +2318,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[9].uid,
                     users[9].fname ?? "",
                     users[9].lastActive ?? "",
                     users[9].headline ?? "",
@@ -2271,6 +2341,7 @@ class _HomeState extends State<Home> {
             child: GestureDetector(
               onTap: () {
                 tapNearbyUser(
+                    users[10].uid,
                     users[10].fname ?? "",
                     users[10].lastActive ?? "",
                     users[10].headline ?? "",
@@ -2364,6 +2435,8 @@ class _HomeState extends State<Home> {
 
                 // Remove older than 60 min and same user id and out of 1000ft
                 nUserAttr.removeWhere((item) => item.uid == userAttd3!.uid);
+                nUserAttr.removeWhere(
+                    (item) => userAttd2!.user!.blocked!.contains(item.uid));
                 nUserAttr.removeWhere(
                     (item) => int.parse(item.lastActive ?? "") > 60);
                 nUserAttr.removeWhere((item) => item.hidden == true);

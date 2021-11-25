@@ -23,6 +23,7 @@ class Login extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Break The Ice',
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xfff2fcff),

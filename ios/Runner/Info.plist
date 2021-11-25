@@ -27,7 +27,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>In order to have a profile picture we need access to camera</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>In order to use this app, location needs to be enabled</string>
+	<string>In order to use this app, location needs to be enabled. We use your location to display nearby users that you can meet! </string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>In order to have a profile picture we need access to camera</string>
 	<key>NSPhotoLibraryUsageDescription</key>

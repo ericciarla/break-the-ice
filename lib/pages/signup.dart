@@ -34,6 +34,7 @@ class SignUp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Break The Ice',
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xfff2fcff),
@@ -329,7 +330,7 @@ class SignUpFormState extends State<SignUpForm> {
                               f2Controller.text,
                               f3Controller.text,
                               profileURL,
-                              false);
+                              false, []);
                         } else {
                           Fluttertoast.showToast(
                               msg: "Please upload an image!",

@@ -6,7 +6,8 @@ class UserAttDB {
   final String? f3;
   final bool? hidden;
   final String? profileURL;
+  final List? blocked;
 
   UserAttDB(this.fname, this.headline, this.f1, this.f2, this.f3, this.hidden,
-      this.profileURL);
+      this.profileURL, this.blocked);
 }

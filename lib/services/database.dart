@@ -18,9 +18,10 @@ class DatabaseService {
 
   // Edit Profile - Working
   Future updateUserData(String fname, String headline, String f1, String f2,
-      String f3, String profileURL, bool hidden) async {
+      String f3, String profileURL, bool hidden, List blocked) async {
     final User? user = await AuthService().getCurrentUser();
     String userId = user?.uid ?? " ";
+
     return await userAttrCollection.doc(userId).set({
       'fname': fname,
       'headline': headline,
@@ -29,6 +30,7 @@ class DatabaseService {
       'f3': f3,
       'profileURL': profileURL,
       'hidden': hidden,
+      'blocked': blocked,
     });
   }
 
@@ -41,18 +43,30 @@ class DatabaseService {
     });
   }
 
+  // Toggle hide profile - working
+  Future blockUser(String blockedUID) async {
+    final User? user = await AuthService().getCurrentUser();
+    String userId = user?.uid ?? " ";
+    List<String> list1 = [];
+    list1.add(blockedUID);
+    print(blockedUID + " blocked");
+    return await userAttrCollection.doc(userId).update({
+      'blocked': FieldValue.arrayUnion(list1),
+    });
+  }
+
   // Format list of user info - working
   List<UserAttDB> userAttDBFromSnapshot(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) {
       return UserAttDB(
-        doc.get('fname') ?? " ",
-        doc.get('headline') ?? " ",
-        doc.get('f1') ?? " ",
-        doc.get('f2') ?? " ",
-        doc.get('f3') ?? " ",
-        doc.get('hidden') ?? " ",
-        doc.get('profileURL') ?? " ",
-      );
+          doc.get('fname') ?? " ",
+          doc.get('headline') ?? " ",
+          doc.get('f1') ?? " ",
+          doc.get('f2') ?? " ",
+          doc.get('f3') ?? " ",
+          doc.get('hidden') ?? " ",
+          doc.get('profileURL') ?? " ",
+          doc.get('blocked') ?? " ");
     }).toList();
   }
 
@@ -60,14 +74,14 @@ class DatabaseService {
   UserAttDB userAttDBFromSnapshotNL(DocumentSnapshot snapshot) {
     var doc = snapshot;
     return UserAttDB(
-      doc.get('fname') ?? " ",
-      doc.get('headline') ?? " ",
-      doc.get('f1') ?? " ",
-      doc.get('f2') ?? " ",
-      doc.get('f3') ?? " ",
-      doc.get('hidden') ?? " ",
-      doc.get('profileURL') ?? " ",
-    );
+        doc.get('fname') ?? " ",
+        doc.get('headline') ?? " ",
+        doc.get('f1') ?? " ",
+        doc.get('f2') ?? " ",
+        doc.get('f3') ?? " ",
+        doc.get('hidden') ?? " ",
+        doc.get('profileURL') ?? " ",
+        doc.get('blocked') ?? " ");
   }
 
   // Format own user info - working

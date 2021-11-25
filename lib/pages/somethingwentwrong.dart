@@ -16,6 +16,7 @@ class _SomethingWentWrongState extends State<SomethingWentWrong> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Break The Ice',
       theme: ThemeData(
         primaryColor: Color(0xff79DFFF),

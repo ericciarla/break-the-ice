@@ -55,6 +55,7 @@ class EditProfileFormState extends State<EditProfileForm> {
     var f3 = userAttd2.user?.f3;
     var profileURL = userAttd2.user?.profileURL;
     var hidden = userAttd2.user?.hidden;
+    var blocked = userAttd2.user?.blocked;
 
     fnameController.text = fname!;
     headlineController.text = headline!;
@@ -224,7 +225,8 @@ class EditProfileFormState extends State<EditProfileForm> {
                             f2Controller.text,
                             f3Controller.text,
                             profileURL!,
-                            false);
+                            false,
+                            blocked!);
                         await DatabaseService().updateLocation(
                             fnameController.text,
                             headlineController.text,
