@@ -26,8 +26,8 @@ class Globals {
     curLoc = a;
   }
 
-  static UserLoc lastUserLoc = UserLoc(
-      "", Timestamp.now(), curLoc.data, "", "", "", "", "", false, "", "", "");
+  static UserLoc lastUserLoc = UserLoc("", Timestamp.now(), curLoc.data, "", "",
+      "", "", "", false, "", "", "", []);
 
   static getLastUserLoc() {
     return lastUserLoc;

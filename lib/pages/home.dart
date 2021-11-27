@@ -719,7 +719,8 @@ class _HomeState extends State<Home> {
         widget.UserData.hidden ?? false,
         true,
         widget.UserID,
-        Globals.getCurLoc());
+        Globals.getCurLoc(),
+        widget.UserData.blocked ?? []);
 
     positionStream =
         Geolocator.getPositionStream(distanceFilter: 6).listen((Position pos) {
@@ -737,7 +738,8 @@ class _HomeState extends State<Home> {
           widget.UserData.hidden ?? false,
           true,
           widget.UserID,
-          point);
+          point,
+          widget.UserData.blocked ?? []);
     });
 
     //print(widget.UserData.blocked);
@@ -2437,6 +2439,8 @@ class _HomeState extends State<Home> {
                 nUserAttr.removeWhere((item) => item.uid == userAttd3!.uid);
                 nUserAttr.removeWhere(
                     (item) => userAttd2!.user!.blocked!.contains(item.uid));
+                nUserAttr.removeWhere(
+                    (item) => item.blocked!.contains(userAttd3!.uid));
                 nUserAttr.removeWhere(
                     (item) => int.parse(item.lastActive ?? "") > 60);
                 nUserAttr.removeWhere((item) => item.hidden == true);

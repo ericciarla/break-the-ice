@@ -13,6 +13,7 @@ class UserLoc {
   final String? profileURL;
   String? lastActive;
   String? distance;
+  List? blocked;
 
   UserLoc(
       this.uid,
@@ -26,5 +27,6 @@ class UserLoc {
       this.hidden,
       this.profileURL,
       this.lastActive,
-      this.distance);
+      this.distance,
+      this.blocked);
 }

@@ -237,9 +237,10 @@ class EditProfileFormState extends State<EditProfileForm> {
                             hidden!,
                             true,
                             uid,
-                            Globals.getCurLoc());
+                            Globals.getCurLoc(),
+                            blocked);
 
-                        Future.delayed(const Duration(milliseconds: 200), () {
+                        Future.delayed(const Duration(milliseconds: 3000), () {
                           Navigator.pop(context);
                           Navigator.pop(context);
                           Navigator.pop(context);

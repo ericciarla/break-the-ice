@@ -134,7 +134,8 @@ class DatabaseService {
       bool hidden,
       bool first,
       String uid,
-      GeoFirePoint point) async {
+      GeoFirePoint point,
+      List blocked) async {
     Position? pos;
     DateTime lr;
     lr = Globals.getLastRun();
@@ -152,7 +153,7 @@ class DatabaseService {
             first == false) ||
         Globals.getLastUserLoc() ==
             UserLoc(uid, null, point.data, fname, headline, f1, f2, f3, hidden,
-                profileURL, "", "")) {
+                profileURL, "", "", blocked)) {
       print("Not sent");
       return null;
     } else {
@@ -164,7 +165,7 @@ class DatabaseService {
 
       print("Sent");
       Globals.changeLastUserLoc(UserLoc(uid, null, point.data, fname, headline,
-          f1, f2, f3, hidden, profileURL, "", ""));
+          f1, f2, f3, hidden, profileURL, "", "", blocked));
       Globals.changeLastRun(DateTime.now());
       return await locationCollection.doc(userId).set({
         'position': point.data,
@@ -176,7 +177,8 @@ class DatabaseService {
         'f2': f2,
         'f3': f3,
         'profileURL': profileURL,
-        'hidden': hidden
+        'hidden': hidden,
+        'blocked': blocked
       });
     }
   }
@@ -298,14 +300,15 @@ class DatabaseService {
             doc.get('hidden') ?? " ",
             doc.get('profileURL') ?? " ",
             "",
-            "");
+            "",
+            doc.get('blocked'));
       }).toList();
     });
 
     yield* stream2;
   }
 
-  // Format list of user locations - working
+  // Format list of user locations - not working
   List<UserLoc> LocationsFromSnapshot(List<DocumentSnapshot> snapshot) {
     return snapshot.map((doc) {
       return UserLoc(
@@ -320,7 +323,8 @@ class DatabaseService {
           doc.get('hidden') ?? " ",
           doc.get('profileURL') ?? " ",
           "",
-          "");
+          "",
+          doc.get('blocked'));
     }).toList();
   }
 }
