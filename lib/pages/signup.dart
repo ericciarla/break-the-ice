@@ -77,6 +77,23 @@ class SignUpFormState extends State<SignUpForm> {
   var path = "no file";
   var fileName = getRandomString(25);
 
+  final num = Random().nextInt(3);
+  var prompts1 = [
+    "Your goals for the next year",
+    "Your dream job",
+    "What are you excited about"
+  ];
+  var prompts2 = [
+    "Where you have traveled",
+    "Where are you from",
+    "Interesting hobbies"
+  ];
+  var prompts3 = [
+    "Favorite sport/team",
+    "Favorite movie",
+    "Favorite musical artist"
+  ];
+
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _signupformKey created above.
@@ -177,7 +194,7 @@ class SignUpFormState extends State<SignUpForm> {
                   textCapitalization: TextCapitalization.sentences,
                   decoration: const InputDecoration(
                     //icon: Icon(Icons.person),
-                    hintText: 'Ex. Economics Major @ UNH ',
+                    hintText: 'Ex. What is your major or job?',
                     labelText: 'Headline *',
                   ),
                   validator: (value) {
@@ -196,10 +213,10 @@ class SignUpFormState extends State<SignUpForm> {
                   //initialValue: "",
                   controller: f1Controller,
                   textCapitalization: TextCapitalization.sentences,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     //icon: Icon(Icons.person),
-                    hintText: 'Ex. My favorite place in the world is Rome',
-                    labelText: 'Talk to me about / Interesting factoid (#1) *',
+                    hintText: 'Ex. ' + prompts1[num],
+                    labelText: 'Talk to me about (#1) *',
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -217,10 +234,10 @@ class SignUpFormState extends State<SignUpForm> {
                   //initialValue: "",
                   controller: f2Controller,
                   textCapitalization: TextCapitalization.sentences,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     //icon: Icon(Icons.person),
-                    hintText: 'Ex. Economics and Data Science',
-                    labelText: 'Talk to me about / Interesting factoid (#2) *',
+                    hintText: 'Ex. ' + prompts2[num],
+                    labelText: 'Talk to me about (#2) *',
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -238,10 +255,10 @@ class SignUpFormState extends State<SignUpForm> {
                   //initialValue: "",
                   controller: f3Controller,
                   textCapitalization: TextCapitalization.sentences,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     //icon: Icon(Icons.person),
-                    hintText: 'Ex. I have a beach house in Maine',
-                    labelText: 'Talk to me about / Interesting factoid (#3) *',
+                    hintText: 'Ex. ' + prompts3[num],
+                    labelText: 'Talk to me about (#3) *',
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
