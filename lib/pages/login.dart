@@ -169,6 +169,7 @@ class LoginFormState extends State<LoginForm> {
                         //     MaterialPageRoute(builder: (context) => Wrapper()),
                         //   );
                         // }
+                        Navigator.pop(context);
                       }
                     },
                     child: const Text('Log In'),
