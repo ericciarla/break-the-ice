@@ -161,6 +161,9 @@ class LoginFormState extends State<LoginForm> {
                         Globals.changeCurLoc(point);
                         print("Got Location");
 
+                        // Hide user on login or sign up
+                        DatabaseService().hideUser(true);
+
                         // final User? user = await AuthService().getCurrentUser();
                         // String userId = user?.uid ?? " ";
                         // if (userId != " ") {

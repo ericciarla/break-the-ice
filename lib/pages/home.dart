@@ -7,6 +7,7 @@ import 'package:btiui/services/globals.dart';
 import 'package:btiui/services/storage_service.dart';
 import 'package:btiui/services/user_db_info.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 
 import 'editprofile.dart';
@@ -102,6 +103,18 @@ class _HomeState extends State<Home> {
         ],
       ),
     );
+  }
+
+  void hiddenProf() {
+    Fluttertoast.showToast(
+        msg:
+            "Your profile and location are hidden from other users by your choice or automatically when you first log in. In order to see nearby users you must unhide your profile in settings by tapping the three dots in the bottom right corner.",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 5,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0);
   }
 
   void tapSettings(bool hidden) {
@@ -706,6 +719,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
+
     firebaseData = DatabaseService().nearbyUsers.distinct();
     // Update location
     print(Globals.getCurLoc());
@@ -762,16 +776,18 @@ class _HomeState extends State<Home> {
       if (userAttd2?.user?.hidden == true) {
         return <Widget>[
           Positioned(
-            top: (MediaQuery.of(context).size.height / 1.4),
-            left: (MediaQuery.of(context).size.width / 2) - 100,
+            top: (MediaQuery.of(context).size.height / 1.5),
+            left: (MediaQuery.of(context).size.width / 2) - 150,
             child: RichText(
+              textAlign: TextAlign.center,
               text: const TextSpan(children: <TextSpan>[
                 TextSpan(
-                  text: 'Your profile is hidden. \nUnhide to see others!',
+                  text:
+                      'Your profile and location are hidden\n from other users by your choice or\n automatically when you first sign in.\n\n In order to see nearby users you\n must unhide your profile in settings\n by tapping the three dots in\n the bottom right corner.',
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
                     color: Color(0xff79DFFF),
-                    fontSize: 18,
+                    fontSize: 17,
                   ),
                 ),
               ]),

@@ -348,6 +348,9 @@ class SignUpFormState extends State<SignUpForm> {
                               f3Controller.text,
                               profileURL,
                               false, []);
+
+                          // Hide user on login or sign up
+                          DatabaseService().hideUser(true);
                         } else {
                           Fluttertoast.showToast(
                               msg: "Please upload an image!",
