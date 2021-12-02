@@ -76,6 +76,34 @@ class _HomeState extends State<Home> {
     );
   }
 
+  void tapReport(String uid) {
+    showCupertinoDialog<void>(
+      context: context,
+      builder: (BuildContext context) => CupertinoAlertDialog(
+        title: const Text('Report User'),
+        content: const Text('Do you want to report this user?'),
+        actions: <CupertinoDialogAction>[
+          CupertinoDialogAction(
+            child: const Text('No'),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          CupertinoDialogAction(
+            child: const Text('Yes'),
+            isDestructiveAction: true,
+            onPressed: () {
+              // Do something destructive.
+              DatabaseService().reportUser(uid);
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+          )
+        ],
+      ),
+    );
+  }
+
   void tapSignOut() {
     showCupertinoDialog<void>(
       context: context,
@@ -487,12 +515,29 @@ class _HomeState extends State<Home> {
                     children: [
                       GestureDetector(
                         onTap: () {
+                          tapReport(uid);
+                        },
+                        child: Container(
+                          // margin: const EdgeInsets.only(right: 25.0, bottom: 8),
+                          child: Text(
+                            'Report |',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xffc4c4c4),
+                              fontSize: 15,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
                           tapBlock(uid);
                         },
                         child: Container(
                           margin: const EdgeInsets.only(right: 25.0, bottom: 8),
                           child: Text(
-                            'Block',
+                            ' Block',
                             style: TextStyle(
                               fontWeight: FontWeight.w500,
                               color: Color(0xffc4c4c4),
@@ -778,20 +823,36 @@ class _HomeState extends State<Home> {
           Positioned(
             top: (MediaQuery.of(context).size.height / 1.5),
             left: (MediaQuery.of(context).size.width / 2) - 150,
-            child: RichText(
-              textAlign: TextAlign.center,
-              text: const TextSpan(children: <TextSpan>[
-                TextSpan(
-                  text:
-                      'Your profile and location are hidden\n from other users by your choice or\n automatically when you first sign in.\n\n In order to see nearby users you\n must unhide your profile in settings\n by tapping the three dots in\n the bottom right corner.',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xff79DFFF),
-                    fontSize: 17,
+            child: Column(children: [
+              RichText(
+                textAlign: TextAlign.center,
+                text: const TextSpan(children: <TextSpan>[
+                  TextSpan(
+                    text:
+                        'Your profile and location are hidden\n from other users by your choice or\n automatically when you first sign in.\nYou must unhide to see others!\n\n',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xff79DFFF),
+                      fontSize: 17,
+                    ),
                   ),
+                ]),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  DatabaseService().hideUser(false);
+                },
+                child: const Text('Unhide Me!',
+                    style: TextStyle(color: Color(0xff79DFFF))),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Color(0xffffffff)),
+                  padding: MaterialStateProperty.all(
+                    EdgeInsets.symmetric(vertical: 12.8, horizontal: 85.0),
+                  ),
+                  textStyle: MaterialStateProperty.all(TextStyle(fontSize: 18)),
                 ),
-              ]),
-            ),
+              ),
+            ]),
           ),
         ];
       }

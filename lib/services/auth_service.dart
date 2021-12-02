@@ -9,7 +9,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 class AuthService {
   final auth.FirebaseAuth _firebaseAuth = auth.FirebaseAuth.instance;
 
- 
   UserAtt? userFromFirebase(auth.User? user) {
     if (user == null) {
       return null;
@@ -28,6 +27,7 @@ class AuthService {
     try {
       final credential = await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
+      DatabaseService().hideUser(true);
       return userFromFirebase(credential.user);
     } on auth.FirebaseAuthException catch (e) {
       Fluttertoast.showToast(

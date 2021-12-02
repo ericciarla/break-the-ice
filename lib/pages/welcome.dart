@@ -109,6 +109,19 @@ class _WelcomeState extends State<Welcome> {
                 ],
               ),
             ),
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 20.0, horizontal: 30),
+              child: Text(
+                'By signing up you agree to our Terms and Privacy Policy',
+                style: TextStyle(
+                  fontWeight: FontWeight.w300,
+                  color: Color(0xffffffff),
+                  fontSize: 15,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
           ],
         ),
       ),

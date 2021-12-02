@@ -5,6 +5,8 @@ import 'package:btiui/services/auth_service.dart';
 import 'package:btiui/services/user_db_info.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import '../models/user_model_db.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
@@ -15,6 +17,9 @@ import 'globals.dart';
 class DatabaseService {
   final CollectionReference userAttrCollection =
       FirebaseFirestore.instance.collection('userAttr');
+
+  final CollectionReference reportedUserAttrCollection =
+      FirebaseFirestore.instance.collection('Reported');
 
   // Edit Profile - Working
   Future updateUserData(String fname, String headline, String f1, String f2,
@@ -52,6 +57,13 @@ class DatabaseService {
     print(blockedUID + " blocked");
     return await userAttrCollection.doc(userId).update({
       'blocked': FieldValue.arrayUnion(list1),
+    });
+  }
+
+  Future reportUser(String reportedUID) async {
+    print(reportedUID + " reported");
+    return await reportedUserAttrCollection.doc(reportedUID).set({
+      'time': DateTime.now(),
     });
   }
 
@@ -162,6 +174,16 @@ class DatabaseService {
       //pos = await _determinePosition();
       //GeoFirePoint point =
       //    geo.point(latitude: pos.latitude, longitude: pos.longitude);
+      //if (point == geo.point(latitude: 44, longitude: -71)) {
+      //  Fluttertoast.showToast(
+      //      msg: "Looking for location...",
+      //      toastLength: Toast.LENGTH_SHORT,
+      //      gravity: ToastGravity.CENTER,
+      //      timeInSecForIosWeb: 5,
+      //      backgroundColor: Colors.red,
+      //      textColor: Colors.white,
+      //      fontSize: 16.0);
+      //}
 
       print("Sent");
       Globals.changeLastUserLoc(UserLoc(uid, null, point.data, fname, headline,

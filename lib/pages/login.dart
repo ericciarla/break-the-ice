@@ -162,7 +162,6 @@ class LoginFormState extends State<LoginForm> {
                         print("Got Location");
 
                         // Hide user on login or sign up
-                        DatabaseService().hideUser(true);
 
                         // final User? user = await AuthService().getCurrentUser();
                         // String userId = user?.uid ?? " ";
