@@ -333,6 +333,7 @@ class SignUpFormState extends State<SignUpForm> {
 
                           // Try to cache location
                           Geoflutterfire geo = Geoflutterfire();
+
                           Position? pos =
                               await DatabaseService().determinePosition();
                           GeoFirePoint point = geo.point(

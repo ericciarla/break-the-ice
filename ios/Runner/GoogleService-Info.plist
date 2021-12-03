@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>199338123432-vtal29vhp6fq9os0eq5n71dg3sefk0fu.apps.googleusercontent.com</string>
+	<string>199338123432-uaoio3hs3jgesr77u4uck5rhtt32irk7.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.199338123432-vtal29vhp6fq9os0eq5n71dg3sefk0fu</string>
+	<string>com.googleusercontent.apps.199338123432-uaoio3hs3jgesr77u4uck5rhtt32irk7</string>
 	<key>API_KEY</key>
 	<string>AIzaSyDkE3HgNkDeVBjS6qctn90D_nbFaRoNAhQ</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.ciarlaventures.btiui</string>
+	<string>com.ciarlaventures.breaktheice</string>
 	<key>PROJECT_ID</key>
 	<string>btiui-7097a</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:199338123432:ios:1e40578ae284d390f9229d</string>
+	<string>1:199338123432:ios:ef8724a115505744f9229d</string>
 </dict>
 </plist>

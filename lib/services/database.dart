@@ -210,19 +210,36 @@ class DatabaseService {
     bool serviceEnabled;
     LocationPermission permission;
 
-    // // Test if location services are enabled.
-    // try {
-    // serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    // if (!serviceEnabled) {
-    //   // Location services are not enabled don't continue
-    //   // accessing the position and request users of the
-    //   // App to enable the location services.
-    //   return Future.error('Location services are disabled.');
-    // }
-
-    // } catch (e) {
-    //   print(e);
-    // }
+    // Test if location services are enabled.
+    try {
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        // Location services are not enabled don't continue
+        // accessing the position and request users of the
+        // App to enable the location services.
+        print("Location error!");
+        Fluttertoast.showToast(
+            msg:
+                "Your location services seem to be disabled! For the best experience please enable it in settings then log back in.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 20,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+        return Position(
+            longitude: -71,
+            latitude: 44,
+            timestamp: DateTime.now(),
+            accuracy: 0,
+            altitude: 0,
+            heading: 0,
+            speed: 0,
+            speedAccuracy: 0);
+      }
+    } catch (e) {
+      print(e);
+    }
 
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
@@ -233,14 +250,50 @@ class DatabaseService {
         // Android's shouldShowRequestPermissionRationale
         // returned true. According to Android guidelines
         // your App should show an explanatory UI now.
-        return Future.error('Location permissions are denied');
+        print("Location error!");
+        Fluttertoast.showToast(
+            msg:
+                "Your location services seem to be disabled! For the best experience please enable it in settings then log back in.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 20,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+        return Position(
+            longitude: -71,
+            latitude: 44,
+            timestamp: DateTime.now(),
+            accuracy: 0,
+            altitude: 0,
+            heading: 0,
+            speed: 0,
+            speedAccuracy: 0);
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
       // Permissions are denied forever, handle appropriately.
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
+      print("Location error!");
+      Fluttertoast.showToast(
+          msg:
+              "Your location services seem to be disabled! For the best experience please enable it in settings then log back in.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 20,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+
+      return Position(
+          longitude: -71,
+          latitude: 44,
+          timestamp: DateTime.now(),
+          accuracy: 0,
+          altitude: 0,
+          heading: 0,
+          speed: 0,
+          speedAccuracy: 0);
     }
 
     // When we reach here, permissions are granted and we can
