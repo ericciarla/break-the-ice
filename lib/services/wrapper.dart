@@ -31,14 +31,14 @@ class Wrapper extends StatelessWidget {
               snapshot2.hasData) {
             analytics.setUserId(user.uid);
             dbService2.setUser(snapshot2.data!);
-            print("3");
+            //print("3");
             return StreamBuilder<List<UserLoc>>(
                 stream: dbService.nearbyUsers,
                 builder: (context, snapshot3) {
-                  print("2");
+                  //print("2");
                   if (snapshot3.connectionState == ConnectionState.active &&
                       snapshot3.hasData) {
-                    print("1");
+                    //print("1");
                     return Home(
                         nUserAttr: snapshot3.data!,
                         UserData: snapshot2.data!,

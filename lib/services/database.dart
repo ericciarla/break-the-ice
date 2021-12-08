@@ -1,6 +1,7 @@
 import 'package:btiui/models/user_model.dart';
 import 'package:btiui/models/location_model.dart';
 import 'package:btiui/models/nearby_user_model_db.dart';
+import 'package:btiui/models/waves_model.dart';
 import 'package:btiui/services/auth_service.dart';
 import 'package:btiui/services/user_db_info.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -20,6 +21,9 @@ class DatabaseService {
 
   final CollectionReference reportedUserAttrCollection =
       FirebaseFirestore.instance.collection('Reported');
+
+  final CollectionReference wavesUserAttrCollection =
+      FirebaseFirestore.instance.collection('Waves');
 
   // Edit Profile - Working
   Future updateUserData(String fname, String headline, String f1, String f2,
@@ -48,6 +52,12 @@ class DatabaseService {
     });
   }
 
+  Future setSeenWave(String notif_id) async {
+    return await wavesUserAttrCollection.doc(notif_id).update({
+      'seen': true,
+    });
+  }
+
   // Toggle hide profile - working
   Future blockUser(String blockedUID) async {
     final User? user = await AuthService().getCurrentUser();
@@ -64,6 +74,51 @@ class DatabaseService {
     print(reportedUID + " reported");
     return await reportedUserAttrCollection.doc(reportedUID).set({
       'time': DateTime.now(),
+    });
+  }
+
+  Future reportUser2(
+      String reportedUID, String reporterUID, String message) async {
+    print(reportedUID + " reported");
+    return await reportedUserAttrCollection
+        .doc(reportedUID + Timestamp.now().toString())
+        .set({
+      'Reported_User': reportedUID,
+      'Submitter': reporterUID,
+      'Message': message,
+      'time': DateTime.now(),
+    });
+  }
+
+  Future wavetoUser(
+      String receiver_uid,
+      String receiver_fname,
+      String uid,
+      String fname,
+      String lastActive,
+      String headline,
+      String f1,
+      String f2,
+      String f3,
+      String imageID,
+      String message) async {
+    print(fname + " waved at " + receiver_fname + ": " + message);
+    return await wavesUserAttrCollection
+        .doc(uid + Timestamp.now().toString())
+        .set({
+      'receiver_uid': receiver_uid,
+      'receiver_fname': receiver_fname,
+      'uid': uid,
+      'fname': fname,
+      'lastActive': lastActive,
+      'headline': headline,
+      'f1': f1,
+      'f2': f2,
+      'f3': f3,
+      'imageID': imageID,
+      'message': message,
+      'time': DateTime.now(),
+      'seen': false
     });
   }
 
@@ -333,6 +388,36 @@ class DatabaseService {
       return Future.error(
           'Location permissions are permanently denied, we cannot request permissions.');
     }
+  }
+
+  Stream<List<Waves>> get wavesGet async* {
+    final User? user = await AuthService().getCurrentUser();
+    String loggedinuid = user?.uid ?? " ";
+    print(loggedinuid);
+
+    var stream1 = wavesUserAttrCollection
+        .where("receiver_uid", isEqualTo: loggedinuid)
+        .snapshots();
+
+    var stream2 = stream1.map((event) {
+      return event.docs.map((doc) {
+        return Waves(
+            doc.get('uid') ?? " ",
+            doc.get('fname') ?? " ",
+            doc.get('headline') ?? " ",
+            doc.get('f1') ?? " ",
+            doc.get('f2') ?? " ",
+            doc.get('f3') ?? " ",
+            doc.get('imageID') ?? " ",
+            doc.get('lastActive') ?? " ",
+            doc.get('message') ?? " ",
+            doc.get('time') ?? " ",
+            doc.get('seen'),
+            doc.id);
+      }).toList();
+    });
+
+    yield* stream2;
   }
 
   // Query nearby users - working

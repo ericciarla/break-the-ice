@@ -271,6 +271,7 @@ class SignUpFormState extends State<SignUpForm> {
                   },
                 ),
                 //SizedBox(height: 10),
+
                 TextFormField(
                   //initialValue: "Eric",
                   controller: emailController,

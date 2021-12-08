@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:btiui/models/nearby_user_model_db.dart';
+import 'package:btiui/models/waves_model.dart';
 import 'package:btiui/pages/loading.dart';
 import 'package:btiui/pages/login.dart';
 import 'package:btiui/services/globals.dart';
@@ -48,6 +49,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   // ON TAP FUNCTIONS
+
   void tapBlock(String uid) {
     showCupertinoDialog<void>(
       context: context,
@@ -76,6 +78,7 @@ class _HomeState extends State<Home> {
     );
   }
 
+// no longer used
   void tapReport(String uid) {
     showCupertinoDialog<void>(
       context: context,
@@ -143,6 +146,189 @@ class _HomeState extends State<Home> {
         backgroundColor: Colors.red,
         textColor: Colors.white,
         fontSize: 16.0);
+  }
+
+  void tapReport2(String reportedUID, String reporterUID) {
+    final TextEditingController reportController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          insetPadding: EdgeInsets.all(35),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+          elevation: 160,
+          child: Form(
+            child: Container(
+              padding: EdgeInsets.fromLTRB(30, 20, 30, 20),
+              child: ListView(
+                shrinkWrap: true,
+                children: <Widget>[
+                  SizedBox(height: 0),
+                  Center(
+                    child: Text(
+                      'Report User',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        //color: Color(0xffc4c4c4),
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                  TextFormField(
+                    //initialValue: "Eric",
+                    controller: reportController,
+                    maxLength: 65,
+
+                    decoration: const InputDecoration(
+                      //icon: Icon(Icons.person),
+                      labelText: 'Report Message (Optional)',
+                      hintText: 'This user is...',
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      await DatabaseService().reportUser2(
+                          reportedUID, reporterUID, reportController.text);
+
+                      Future.delayed(const Duration(milliseconds: 500), () {
+                        Navigator.pop(context);
+                      });
+                    },
+                    icon: Transform.rotate(
+                      angle: 0, //set the angel
+                      child: Icon(
+                        //Icons.pan_tool_outlined,
+                        Icons.flag,
+                        size: 20.0,
+                        //color: Color(0xffc4c4c4),
+                        color: Color(0xffffffff),
+                      ),
+                    ),
+                    label: Text('Send Report'),
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(Color(0xff79DFFF)),
+                      padding: MaterialStateProperty.all(
+                        EdgeInsets.symmetric(vertical: 12.8, horizontal: 35.0),
+                      ),
+                      textStyle:
+                          MaterialStateProperty.all(TextStyle(fontSize: 18)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void tapWave(
+      String receiver_uid,
+      String receiver_fname,
+      String uid,
+      String fname,
+      String lastActive,
+      String headline,
+      String f1,
+      String f2,
+      String f3,
+      String imageID) {
+    final TextEditingController waveController = TextEditingController();
+    analytics.logEvent(
+      name: 'wave_at_user',
+      parameters: <String, dynamic>{
+        'Waver': uid,
+        'Wavee': receiver_uid,
+      },
+    );
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          insetPadding: EdgeInsets.all(35),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+          elevation: 160,
+          child: Form(
+            child: Container(
+              padding: EdgeInsets.fromLTRB(30, 20, 30, 20),
+              child: ListView(
+                shrinkWrap: true,
+                children: <Widget>[
+                  SizedBox(height: 0),
+                  Center(
+                    child: Text(
+                      'Wave at $receiver_fname!',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        //color: Color(0xffc4c4c4),
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                  TextFormField(
+                    //initialValue: "Eric",
+                    controller: waveController,
+                    maxLength: 95,
+
+                    decoration: const InputDecoration(
+                      //icon: Icon(Icons.person),
+                      labelText: 'Wave Message (Optional)',
+                      hintText: 'Just missed you, my insta is ...',
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      await DatabaseService().wavetoUser(
+                          receiver_uid,
+                          receiver_fname,
+                          uid,
+                          fname,
+                          lastActive,
+                          headline,
+                          f1,
+                          f2,
+                          f3,
+                          imageID,
+                          waveController.text);
+
+                      Future.delayed(const Duration(milliseconds: 500), () {
+                        Navigator.pop(context);
+                      });
+                    },
+                    icon: Transform.rotate(
+                      angle: 0.52, //set the angel
+                      child: Icon(
+                        //Icons.pan_tool_outlined,
+                        Icons.pan_tool,
+                        size: 20.0,
+                        //color: Color(0xffc4c4c4),
+                        color: Color(0xffffffff),
+                      ),
+                    ),
+                    label: Text('Send Wave'),
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all(Color(0xff79DFFF)),
+                      padding: MaterialStateProperty.all(
+                        EdgeInsets.symmetric(vertical: 12.8, horizontal: 35.0),
+                      ),
+                      textStyle:
+                          MaterialStateProperty.all(TextStyle(fontSize: 18)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void tapSettings(bool hidden) {
@@ -318,6 +504,7 @@ class _HomeState extends State<Home> {
   void tapNearbyUser(String uid, String fname, String lastActive,
       String headline, String f1, String f2, String f3, String imageID) {
     var activeMessage = "";
+
     analytics.logEvent(
       name: 'Tap_nearby_user',
       parameters: <String, dynamic>{
@@ -328,7 +515,10 @@ class _HomeState extends State<Home> {
     if (int.parse(lastActive) < 5) {
       activeMessage = "Active now";
     } else {
-      activeMessage = "Active $lastActive minutes ago";
+      activeMessage = "Active $lastActive min ago";
+    }
+    if (int.parse(lastActive) == 61) {
+      activeMessage = "";
     }
     showDialog(
       context: context,
@@ -416,7 +606,7 @@ class _HomeState extends State<Home> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 15),
+                  SizedBox(height: 12),
                   Text(
                     'Talk to me about:',
                     style: TextStyle(
@@ -465,90 +655,113 @@ class _HomeState extends State<Home> {
                         ),
                         dense: true,
                       ),
-                      SizedBox(height: 10),
-                      Text(
-                        activeMessage,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xff79DFFF),
-                          fontSize: 20,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
                     ],
                   ),
-                  //SizedBox(height: 10),
-                  //Row(
-                  //  mainAxisAlignment: MainAxisAlignment.center,
-                  //  crossAxisAlignment: CrossAxisAlignment.center,
-                  //  children: [
-                  //    ElevatedButton.icon(
-                  //      onPressed: () {},
-                  //      icon: Transform.rotate(
-                  //        angle: 0.52, //set the angel
-                  //        child: Icon(
-                  //          //Icons.pan_tool_outlined,
-                  //          Icons.pan_tool,
-                  //          size: 20.0,
-                  //          //color: Color(0xffc4c4c4),
-                  //          color: Color(0xffffffff),
-                  //        ),
-                  //      ),
-                  //      label: Text('Wave'),
-                  //      style: ButtonStyle(
-                  //        backgroundColor:
-                  //            MaterialStateProperty.all(Color(0xff79DFFF)),
-                  //        padding: MaterialStateProperty.all(
-                  //          EdgeInsets.symmetric(
-                  //              vertical: 12.8, horizontal: 65.0),
-                  //        ),
-                  //        textStyle: MaterialStateProperty.all(
-                  //            TextStyle(fontSize: 18)),
-                  //      ),
-                  //    ),
-                  //  ],
-                  //),
                   SizedBox(height: 10),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          tapReport(uid);
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          tapWave(
+                            uid,
+                            fname,
+                            widget.UserID,
+                            widget.UserData.fname ?? "",
+                            "61",
+                            widget.UserData.headline ?? "",
+                            widget.UserData.f1 ?? "",
+                            widget.UserData.f2 ?? "",
+                            widget.UserData.f3 ?? "",
+                            widget.UserData.profileURL ?? "",
+                          );
                         },
-                        child: Container(
-                          // margin: const EdgeInsets.only(right: 25.0, bottom: 8),
-                          child: Text(
-                            'Report |',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xffc4c4c4),
-                              fontSize: 15,
-                            ),
-                            textAlign: TextAlign.center,
+                        icon: Transform.rotate(
+                          angle: 0.52, //set the angel
+                          child: Icon(
+                            //Icons.pan_tool_outlined,
+                            Icons.pan_tool,
+                            size: 20.0,
+                            //color: Color(0xffc4c4c4),
+                            color: Color(0xffffffff),
                           ),
                         ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          tapBlock(uid);
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.only(right: 25.0, bottom: 8),
-                          child: Text(
-                            ' Block',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xffc4c4c4),
-                              fontSize: 15,
-                            ),
-                            textAlign: TextAlign.center,
+                        label: Text('Wave'),
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(Color(0xff79DFFF)),
+                          padding: MaterialStateProperty.all(
+                            EdgeInsets.symmetric(
+                                vertical: 12.8, horizontal: 65.0),
                           ),
+                          textStyle: MaterialStateProperty.all(
+                              TextStyle(fontSize: 18)),
                         ),
                       ),
                     ],
                   ),
+                  SizedBox(height: 5),
+                  Row(
+                    //mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(left: 25.0),
+                        child: Text(
+                          activeMessage,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xff79DFFF),
+                            fontSize: 15,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              tapReport2(uid, widget.UserID);
+                            },
+                            child: Container(
+                              // margin: const EdgeInsets.only(right: 25.0, bottom: 8),
+                              child: Text(
+                                'Report |',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xffc4c4c4),
+                                  fontSize: 15,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              tapBlock(uid);
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(right: 25.0),
+                              child: Text(
+                                ' Block',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xffc4c4c4),
+                                  fontSize: 15,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 5),
                 ],
               ),
             ),
@@ -758,6 +971,7 @@ class _HomeState extends State<Home> {
   }
 
   late Stream<List<UserLoc>> firebaseData;
+  late Stream<List<Waves>> firebaseData2;
   Timer? _locationTimer;
   late StreamSubscription<Position>? positionStream;
 
@@ -766,6 +980,8 @@ class _HomeState extends State<Home> {
     super.initState();
 
     firebaseData = DatabaseService().nearbyUsers.distinct();
+    firebaseData2 = DatabaseService().wavesGet.asBroadcastStream();
+
     // Update location
     print(Globals.getCurLoc());
     DatabaseService().updateLocation(
@@ -810,6 +1026,25 @@ class _HomeState extends State<Home> {
     positionStream?.cancel();
 
     super.dispose();
+  }
+
+  void tapActivity(Widget waves) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)),
+          elevation: 160,
+          child: Container(
+            //height: (MediaQuery.of(context).size.height / 2),
+
+            padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+            child: waves,
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -2442,6 +2677,124 @@ class _HomeState extends State<Home> {
       return <Widget>[];
     }
 
+    // Find way to display this on activity dialog
+    // Put count of this stream on top of hand
+    Widget WaveStream(List<Waves>? wavedata) {
+      if (wavedata?.length == 0) {
+        return ListView(
+          shrinkWrap: true,
+          children: <Widget>[
+            SizedBox(height: 10),
+            Center(
+              child: Text(
+                'Wave Activity',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  //color: Color(0xffc4c4c4),
+                  fontSize: 18,
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+            Center(
+              child: Text(
+                'You have no incoming waves :(',
+                style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  //color: Color(0xffc4c4c4),
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+          ],
+        );
+      } else {
+        wavedata?.sort((a, b) {
+          var adate = a.time; //before -> var adate = a.expiry;
+          var bdate = b.time; //before -> var bdate = b.expiry;
+          return bdate!.compareTo(
+              adate!); //to get the order other way just switch `adate & bdate`
+        });
+        return ListView(
+          shrinkWrap: true,
+          children: <Widget>[
+                SizedBox(height: 10),
+                Center(
+                  child: Text(
+                    'Wave Activity',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      //color: Color(0xffc4c4c4),
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ] +
+              wavedata!.map((element) {
+                var fname = element.fname ?? "";
+                var message = element.message ?? "";
+                if (message == "") {
+                  fname = fname + " waved!";
+                } else {
+                  fname = fname + " waved: ";
+                }
+
+                Color avatarCol = Color(0xff79DFFF);
+                if (element.seen == true) {
+                  avatarCol = Color(0xffc4c4c4);
+                }
+                return GestureDetector(
+                  onTap: () {
+                    DatabaseService().setSeenWave(element.notif_id ?? "");
+                    tapNearbyUser(
+                        element.uid,
+                        element.fname ?? "",
+                        element.lastActive ?? "",
+                        element.headline ?? "",
+                        element.f1 ?? "",
+                        element.f2 ?? "",
+                        element.f3 ?? "",
+                        element.profileURL ?? "");
+                  },
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: avatarCol,
+                      radius: 26,
+
+                      // ignore: prefer_const_constructors
+                      child: CircleAvatar(
+                        backgroundImage: NetworkImage(element.profileURL ?? ""),
+                        radius: 23,
+                      ),
+                    ),
+                    title: RichText(
+                      text: TextSpan(children: <TextSpan>[
+                        TextSpan(
+                          text: "$fname",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xff5a5a5a),
+                            fontSize: 15,
+                          ),
+                        ),
+                        TextSpan(
+                          text: "$message",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xff5a5a5a),
+                            fontSize: 15,
+                          ),
+                        ),
+                      ]),
+                    ),
+                  ),
+                );
+              }).toList(),
+        );
+      }
+    }
+
     List<Widget> UserStreamTest2() {
       return <Widget>[
         StreamBuilder<List<UserLoc>>(
@@ -2534,6 +2887,7 @@ class _HomeState extends State<Home> {
     }
 
     // Populate the UI
+
     List<Widget> UIpopulate() {
       return <Widget>[
         Container(
@@ -2596,6 +2950,68 @@ class _HomeState extends State<Home> {
             ),
           ),
         ),
+        StreamBuilder<List<Waves>>(
+            stream: firebaseData2,
+            builder: (_, AsyncSnapshot<List<Waves>> snapshot8) {
+              if (snapshot8.connectionState == ConnectionState.active) {
+                var wavedata = snapshot8.data;
+                wavedata?.removeWhere((element) =>
+                    userAttd2!.user!.blocked!.contains(element.uid));
+                var unseen = List.from(wavedata!);
+                unseen.removeWhere((item) => item.seen == true);
+                var unseen_count = unseen.length;
+
+                Color handColor = Color(0xff79DFFF);
+                if (unseen_count == 0) {
+                  handColor = Color(0xffc4c4c4);
+                }
+                return Stack(
+                  children: [
+                    Positioned(
+                      bottom: 50,
+                      left: 64,
+                      child: GestureDetector(
+                        onTap: () {
+                          tapActivity(WaveStream(wavedata));
+                        },
+                        child: RichText(
+                          text: TextSpan(children: <TextSpan>[
+                            TextSpan(
+                              text: unseen_count.toString(),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                color: handColor,
+                                fontSize: 20,
+                              ),
+                            ),
+                          ]),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 25,
+                      left: 22,
+                      child: GestureDetector(
+                        onTap: () {
+                          tapActivity(WaveStream(wavedata));
+                        },
+                        child: Transform.rotate(
+                          angle: 0.52, //set the angel
+                          child: Icon(
+                            //Icons.pan_tool_outlined,
+                            Icons.pan_tool,
+                            size: 40.0,
+                            //color: Color(0xffc4c4c4),
+                            color: handColor,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }
+              return CircularProgressIndicator();
+            }),
       ];
     }
 
@@ -2634,6 +3050,7 @@ class _HomeState extends State<Home> {
         child: Stack(
             alignment: AlignmentDirectional.center,
             children: UIpopulate() + OwnProfilePopulate() + UserStreamTest2()
+
             //displayUsers(nearbyUserAttr),
             ),
       ),
