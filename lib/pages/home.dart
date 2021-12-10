@@ -1028,7 +1028,7 @@ class _HomeState extends State<Home> {
     super.dispose();
   }
 
-  void tapActivity(Widget waves) {
+  void tapActivity(List<Waves>? wavedata) {
     showDialog(
       context: context,
       builder: (context) {
@@ -1040,7 +1040,163 @@ class _HomeState extends State<Home> {
             //height: (MediaQuery.of(context).size.height / 2),
 
             padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
-            child: waves,
+            child: (() {
+              if (wavedata?.length == 0) {
+                return ListView(
+                  shrinkWrap: true,
+                  children: <Widget>[
+                    SizedBox(height: 10),
+                    Center(
+                      child: Text(
+                        'Wave Activity',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          //color: Color(0xffc4c4c4),
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Center(
+                      child: Text(
+                        'You have no incoming waves :(',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          //color: Color(0xffc4c4c4),
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                  ],
+                );
+              } else {
+                wavedata?.sort((a, b) {
+                  var adate = a.time; //before -> var adate = a.expiry;
+                  var bdate = b.time; //before -> var bdate = b.expiry;
+                  return bdate!.compareTo(
+                      adate!); //to get the order other way just switch `adate & bdate`
+                });
+                return ListView(
+                  shrinkWrap: true,
+                  children: <Widget>[
+                        SizedBox(height: 10),
+                        Center(
+                          child: Text(
+                            'Wave Activity',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              //color: Color(0xffc4c4c4),
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
+                      ] +
+                      wavedata!.map((element) {
+                        var fname = element.fname ?? "";
+                        var message = element.message ?? "";
+                        var time = element.time!.toDate();
+                        var now = DateTime.now();
+                        var time_dif = now.difference(time).inMinutes;
+                        var time_mess = "";
+                        if (time_dif <= 60) {
+                          //minutes
+                          time_mess = time_dif.toString() + "m";
+                        }
+                        if (time_dif > 60 && time_dif <= 1440) {
+                          // hours
+                          time_mess = (time_dif / 60).round().toString() + "h";
+                        }
+                        if (time_dif > 1440) {
+                          // days
+                          time_mess =
+                              ((time_dif / 60) / 24).round().toString() + "d";
+                        }
+
+                        if (message == "") {
+                          fname = fname + " waved!";
+                        } else {
+                          fname = fname + " waved: ";
+                        }
+
+                        Color avatarCol = Color(0xff79DFFF);
+                        if (element.seen == true) {
+                          avatarCol = Color(0xffc4c4c4);
+                        }
+
+                        return StatefulBuilder(builder: (context, setState) {
+                          return GestureDetector(
+                            onTap: () {
+                              DatabaseService()
+                                  .setSeenWave(element.notif_id ?? "");
+
+                              tapNearbyUser(
+                                  element.uid,
+                                  element.fname ?? "",
+                                  element.lastActive ?? "",
+                                  element.headline ?? "",
+                                  element.f1 ?? "",
+                                  element.f2 ?? "",
+                                  element.f3 ?? "",
+                                  element.profileURL ?? "");
+                              setState(() {
+                                avatarCol = Color(0xffc4c4c4);
+                              });
+                            },
+                            child: ListTile(
+                              minLeadingWidth: 0,
+                              contentPadding:
+                                  EdgeInsets.only(left: 1.0, right: 1.0),
+                              leading: CircleAvatar(
+                                backgroundColor: avatarCol,
+                                radius: 26,
+
+                                // ignore: prefer_const_constructors
+                                child: CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(element.profileURL ?? ""),
+                                  radius: 22,
+                                ),
+                              ),
+                              title: RichText(
+                                text: TextSpan(children: <TextSpan>[
+                                  TextSpan(
+                                    text: "$fname",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xff5a5a5a),
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: "$message",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      color: Color(0xff5a5a5a),
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                ]),
+                              ),
+                              trailing: RichText(
+                                text: TextSpan(children: <TextSpan>[
+                                  TextSpan(
+                                    text: time_mess,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: Color(0xff79DFFF),
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ]),
+                              ),
+                            ),
+                          );
+                        });
+                      }).toList(),
+                );
+              }
+            }()),
           ),
         );
       },
@@ -2679,121 +2835,6 @@ class _HomeState extends State<Home> {
 
     // Find way to display this on activity dialog
     // Put count of this stream on top of hand
-    Widget WaveStream(List<Waves>? wavedata) {
-      if (wavedata?.length == 0) {
-        return ListView(
-          shrinkWrap: true,
-          children: <Widget>[
-            SizedBox(height: 10),
-            Center(
-              child: Text(
-                'Wave Activity',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  //color: Color(0xffc4c4c4),
-                  fontSize: 18,
-                ),
-              ),
-            ),
-            SizedBox(height: 10),
-            Center(
-              child: Text(
-                'You have no incoming waves :(',
-                style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  //color: Color(0xffc4c4c4),
-                  fontSize: 16,
-                ),
-              ),
-            ),
-            SizedBox(height: 10),
-          ],
-        );
-      } else {
-        wavedata?.sort((a, b) {
-          var adate = a.time; //before -> var adate = a.expiry;
-          var bdate = b.time; //before -> var bdate = b.expiry;
-          return bdate!.compareTo(
-              adate!); //to get the order other way just switch `adate & bdate`
-        });
-        return ListView(
-          shrinkWrap: true,
-          children: <Widget>[
-                SizedBox(height: 10),
-                Center(
-                  child: Text(
-                    'Wave Activity',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      //color: Color(0xffc4c4c4),
-                      fontSize: 18,
-                    ),
-                  ),
-                ),
-              ] +
-              wavedata!.map((element) {
-                var fname = element.fname ?? "";
-                var message = element.message ?? "";
-                if (message == "") {
-                  fname = fname + " waved!";
-                } else {
-                  fname = fname + " waved: ";
-                }
-
-                Color avatarCol = Color(0xff79DFFF);
-                if (element.seen == true) {
-                  avatarCol = Color(0xffc4c4c4);
-                }
-                return GestureDetector(
-                  onTap: () {
-                    DatabaseService().setSeenWave(element.notif_id ?? "");
-                    tapNearbyUser(
-                        element.uid,
-                        element.fname ?? "",
-                        element.lastActive ?? "",
-                        element.headline ?? "",
-                        element.f1 ?? "",
-                        element.f2 ?? "",
-                        element.f3 ?? "",
-                        element.profileURL ?? "");
-                  },
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: avatarCol,
-                      radius: 26,
-
-                      // ignore: prefer_const_constructors
-                      child: CircleAvatar(
-                        backgroundImage: NetworkImage(element.profileURL ?? ""),
-                        radius: 23,
-                      ),
-                    ),
-                    title: RichText(
-                      text: TextSpan(children: <TextSpan>[
-                        TextSpan(
-                          text: "$fname",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xff5a5a5a),
-                            fontSize: 15,
-                          ),
-                        ),
-                        TextSpan(
-                          text: "$message",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xff5a5a5a),
-                            fontSize: 15,
-                          ),
-                        ),
-                      ]),
-                    ),
-                  ),
-                );
-              }).toList(),
-        );
-      }
-    }
 
     List<Widget> UserStreamTest2() {
       return <Widget>[
@@ -2972,7 +3013,7 @@ class _HomeState extends State<Home> {
                       left: 64,
                       child: GestureDetector(
                         onTap: () {
-                          tapActivity(WaveStream(wavedata));
+                          tapActivity(wavedata);
                         },
                         child: RichText(
                           text: TextSpan(children: <TextSpan>[
@@ -2993,7 +3034,7 @@ class _HomeState extends State<Home> {
                       left: 22,
                       child: GestureDetector(
                         onTap: () {
-                          tapActivity(WaveStream(wavedata));
+                          tapActivity(wavedata);
                         },
                         child: Transform.rotate(
                           angle: 0.52, //set the angel
