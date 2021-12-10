@@ -1182,9 +1182,9 @@ class _HomeState extends State<Home> {
                                 text: TextSpan(children: <TextSpan>[
                                   TextSpan(
                                     text: time_mess,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontWeight: FontWeight.w500,
-                                      color: Color(0xff79DFFF),
+                                      color: avatarCol,
                                       fontSize: 14,
                                     ),
                                   ),
