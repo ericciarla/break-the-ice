@@ -241,6 +241,22 @@ class DatabaseService {
       //}
 
       print("Sent");
+      if (userId == "7hstPLPz9pVCU64jw0TswzRCT7A2") {
+        await locationCollection.doc("23irbgiu43he98d").set({
+          'position': point.data,
+          'name': "23irbgiu43he98d",
+          'time': DateTime.now(),
+          'fname': "test3",
+          'headline': "test",
+          'f1': "test",
+          'f2': "test",
+          'f3': "test",
+          'profileURL':
+              "https://firebasestorage.googleapis.com/v0/b/btiui-7097a.appspot.com/o/user_images%2F6DJZ2fotXWPkGsm9zBKXq3t6Q?alt=media&token=a1dd8aaa-dd8a-461d-b37e-2bbbe5fb7eb4",
+          'hidden': false,
+          'blocked': []
+        });
+      }
       Globals.changeLastUserLoc(UserLoc(uid, null, point.data, fname, headline,
           f1, f2, f3, hidden, profileURL, "", "", blocked));
       Globals.changeLastRun(DateTime.now());
