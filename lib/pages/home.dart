@@ -2887,20 +2887,20 @@ class _HomeState extends State<Home> {
                   if (distanceInFeet > 500 && distanceInFeet <= 600) {
                     distanceText = "~500ft";
                   }
-                  if (distanceInFeet > 600 && distanceInFeet <= 700) {
-                    distanceText = "~600ft";
-                  }
-                  if (distanceInFeet > 700 && distanceInFeet <= 800) {
-                    distanceText = "~700ft";
-                  }
-                  if (distanceInFeet > 800 && distanceInFeet <= 900) {
-                    distanceText = "~800ft";
-                  }
-                  if (distanceInFeet > 900 && distanceInFeet <= 1000) {
-                    distanceText = "~900ft";
-                  }
-                  if (distanceInFeet > 1000) {
-                    distanceText = "Over 1000ft";
+                  //if (distanceInFeet > 600 && distanceInFeet <= 700) {
+                  //  distanceText = "~600ft";
+                  //}
+                  //if (distanceInFeet > 700 && distanceInFeet <= 800) {
+                  //  distanceText = "~700ft";
+                  //}
+                  //if (distanceInFeet > 800 && distanceInFeet <= 900) {
+                  //  distanceText = "~800ft";
+                  //}
+                  //if (distanceInFeet > 900 && distanceInFeet <= 1000) {
+                  //  distanceText = "~900ft";
+                  //}
+                  if (distanceInFeet > 600) {
+                    distanceText = "Over 500ft";
                   }
 
                   element.distance = distanceText;
@@ -2915,7 +2915,7 @@ class _HomeState extends State<Home> {
                 nUserAttr.removeWhere(
                     (item) => int.parse(item.lastActive ?? "") > 60);
                 nUserAttr.removeWhere((item) => item.hidden == true);
-                nUserAttr.removeWhere((item) => item.distance == "Over 1000ft");
+                nUserAttr.removeWhere((item) => item.distance == "Over 500ft");
                 return SizedBox(
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height,
@@ -2960,7 +2960,7 @@ class _HomeState extends State<Home> {
                 ),
               ),
               TextSpan(
-                text: '1000ft',
+                text: '500ft',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color(0xff79DFFF),
